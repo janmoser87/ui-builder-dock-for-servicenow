@@ -1,7 +1,7 @@
 {
 	"name": "ui-builder-dock-for-servicenow",
 	"displayName": "UI Builder Dock for ServiceNow",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "A lightweight utility that enhances ServiceNow UI Builder development by making key parts easier to explore and understand.",
 	"author": "Jan Moser <m.janmoser@gmail.com>",
 	"homepage": "https://myuibcorner.com",

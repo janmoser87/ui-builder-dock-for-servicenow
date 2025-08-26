@@ -6,6 +6,7 @@ import { useAppContext } from "../../../contexts/AppContext";
 
 // Components
 import ClientScript from "./ClientScript"
+import NoData from "./../../NoData"
 
 export default function ClientScripts() {
 
@@ -15,17 +16,21 @@ export default function ClientScripts() {
     useEffect(() => {
         try {
             const data = JSON.parse(macroponentData._scripts)
-            setData(data)
+            setData(data.filter(item => item.type == "default"))
         }
         catch (e) {
             setData([])
         }
     }, [])
 
+    if (!data[0]) {
+        return <NoData sectionName="client scripts" />
+    }
+
     return (
         <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
             {
-                data.filter(item => item.type == "default").map((item, index) => <ClientScript key={index} item={item} />)
+                data.map((item, index) => <ClientScript key={index} item={item} />)
             }
         </Flex>
     )

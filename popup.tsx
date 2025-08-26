@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Flex, ConfigProvider, Typography, Button } from "antd";
-import { QuestionCircleOutlined, CloseOutlined, RocketOutlined, RocketFilled    } from '@ant-design/icons';
+import { QuestionCircleOutlined, CloseOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import logo from "url:./assets/icon.development.png"
 import "./popup.css"
 
@@ -20,6 +20,7 @@ function IndexPopup() {
 	const [subtitle, setSubtitle] = useState("")
 	const [showAbout, setShowAbout] = useState(false)
 	const [showQuickLinks, setShowQuickLinks] = useState(false)
+	const [hideQuickLinksButton, setHideQuickLinksButton] = useState(true)
 
 	return (
 		<AppContextProvider>
@@ -36,7 +37,7 @@ function IndexPopup() {
 				}}
 			>
 				<Flex vertical style={{ padding: 10 }}>
-					<Flex justify="space-between" align="center" style={{paddingRight: 10}}>
+					<Flex justify="space-between" align="center" style={{ paddingRight: 10 }}>
 						<Flex gap={10} align="center" justify="flex-start" style={{ marginBottom: 5 }}>
 							<img src={logo} alt="Logo" style={{ width: 32 }} />
 							<Flex vertical>
@@ -45,11 +46,27 @@ function IndexPopup() {
 							</Flex>
 						</Flex>
 						<Flex gap={5}>
-							<Button size="small" shape="circle" icon={showQuickLinks ? <RocketFilled />: <RocketOutlined   />} onClick={() => setShowQuickLinks(!showQuickLinks) }/>
-							<Button size="small" shape="circle" icon={showAbout ? <CloseOutlined/>: <QuestionCircleOutlined />} onClick={() => setShowAbout(!showAbout) }/>
+							{!hideQuickLinksButton && <Button size="small" shape="circle" icon={showQuickLinks ? <CloseOutlined /> : <ThunderboltOutlined />} onClick={() => setShowQuickLinks(!showQuickLinks)} />}
+							<Button size="small" shape="circle" icon={showAbout ? <CloseOutlined /> : <QuestionCircleOutlined />} onClick={() => setShowAbout(!showAbout)} />
 						</Flex>
 					</Flex>
-					{showAbout ? <About /> : <App onAppReady={({tabUrlbase}) => setSubtitle(tabUrlbase)} showQuickLinks={showQuickLinks} />}
+					{showAbout ? 
+						<About /> 
+							: 
+						<App 
+							showQuickLinks={showQuickLinks} 
+							onAppReady={({ tabUrlbase, isInUiBuilderEditor }) => {
+								
+									// Setting URL of the instance
+									setSubtitle(tabUrlbase)
+
+									// Showing?hiding QuickLinks button {QuickLinks are always visible when not in UIB}
+									setHideQuickLinksButton(!isInUiBuilderEditor)
+
+								}
+							}
+							
+						/>}
 				</Flex>
 			</ConfigProvider>
 		</AppContextProvider>

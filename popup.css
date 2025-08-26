@@ -1,7 +1,8 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    background-color: #f7f2f2;
-    width: 700;
-    height: 400; 
-  }
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #f7f2f2;
+	width: 700px;
+	height: 400px;
+}

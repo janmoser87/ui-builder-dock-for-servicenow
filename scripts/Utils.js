@@ -1,12 +1,48 @@
+export const getPageType = (url) => {
+
+    if (url.includes("now/builder/ui/edit/experience")) {
+        return "experience"
+    }
+
+    if (url.includes("now/builder/ui/edit/pc")) {
+        return "pc"
+    }
+
+    if (url.includes("now/builder/ui/component")) {
+        return "component"
+    }
+
+    return null
+}
+
 export const extractUrlProps = (url) => {
     try {
         const path = new URL(url).pathname
-        const match = path.match(/\/now\/builder\/ui\/edit\/(pc|experience)\/([^/]+)\/([^/]+)\/([^/]+)/)
-        if (match) {
-            const [, type, id1, id2, id3] = match
-            return {
-                type: type,
-                ids: [id1, id2, id3]
+        const pageType = getPageType(url)
+
+        if (!pageType) {
+            return { type: null, ids: null }
+        }
+
+        if (pageType == "experience" || pageType == "pc") {
+            const match = path.match(/^\/now\/builder\/ui\/edit\/(pc|experience)\/([^/]+)\/([^/]+)\/([^/]+)$/)
+            if (match) {
+                const [, type, id1, id2, id3] = match
+                return {
+                    type: type,
+                    ids: [id1, id2, id3]
+                }
+            }
+        }
+
+        if (pageType == "component") {
+            const match = path.match(/^\/now\/builder\/ui\/(component)\/([^/]+)$/)
+            if (match) {
+                const [, type, id1] = match
+                return {
+                    type: type,
+                    ids: [id1]
+                }
             }
         }
 
@@ -18,6 +54,7 @@ export const extractUrlProps = (url) => {
 }
 
 export const getTabData = () => {
+
     return new Promise((resolve) => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
@@ -38,8 +75,7 @@ export const getTabData = () => {
                 tabUrlBase: tabs[0].url.split("/")[2],
                 tabUrlProps: extractUrlProps(tabs[0].url),
                 isInServiceNowInstance: tabs[0].url.includes("service-now.com"),
-                isInUiBuilderEditor: tabs[0].url.includes("now/builder/ui/edit"),
-                isPageCollection: tabs[0].url.includes("now/builder/ui/edit/pc/"),
+                isInUiBuilderEditor: tabs[0].url.includes("now/builder/ui/edit/") || tabs[0].url.includes("now/builder/ui/component/")
             })
 
         })

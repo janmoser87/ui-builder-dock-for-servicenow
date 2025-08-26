@@ -4,6 +4,7 @@ import { Flex } from "antd";
 // Components
 import DataResource from "./DataResource";
 import DataResourceBuilder from "./DataResourceBuilder";
+import NoData from "./../../NoData"
 
 // Context
 import { useAppContext } from "../../../contexts/AppContext";
@@ -25,6 +26,10 @@ export default function DataResources() {
             setData([])
         }
     }, [])
+
+    if (!data[0]) {
+        return <NoData sectionName="data resources" />
+    }
 
     return (
         <Flex vertical gap={10} style={{ height: "400px", overflowY: "auto" }}>

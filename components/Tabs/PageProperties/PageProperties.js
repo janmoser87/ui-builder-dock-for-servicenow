@@ -8,36 +8,56 @@ import { getTypeColor } from "./Utils"
 // Context
 import { useAppContext } from "../../../contexts/AppContext";
 
+// Components
+import NoData from "./../../NoData"
+
 export default function Properties() {
 
-    const {tabData, macroponentData} = useAppContext()
+    const { tabData, macroponentData } = useAppContext()
     const [data, setData] = useState([])
 
     useEffect(() => {
         try {
 
+            // Getting type of current UIB page
+            const { tabUrlProps: { type: pageType } } = tabData
+
             // Definition of props
-            let data = JSON.parse(macroponentData.props)
+            let macroponentProps = JSON.parse(macroponentData.props)
 
-            // Values of those props from UX Screen
-            let propsValues = JSON.parse(macroponentData._screen_properties)
+            // Mapping Props to Values
+            setData(macroponentProps.map(prop => {
 
-            // Binding them to the values that are on UX Screen
-            setData(data.map(item => {
-                
-                let valueTranslated = "Unknown value"
-                let value = propsValues[item.name] || null
+                let value
 
-                if (value) {
-                    if (value.type == "DATA_OUTPUT_BINDING") {
-                        valueTranslated = "@" + value.binding?.address?.join(".") 
+                // For Component, the property value is on macroponent.props right away
+                if (pageType == "component") {
+                    value = `"${prop.defaultValue}"`
+                }
+
+                // For Experience and Page Collection, we need to get the value from parent (sys_ux_screen.macroponent_config)
+                if (pageType == "experience" || pageType == "pc") {
+
+                    let macroponentConfig = JSON.parse(macroponentData._parent_screen_macroponent_config)
+                    let macroponentConfigProperty = macroponentConfig[prop.name]
+
+                    if (macroponentConfigProperty?.type == "JSON_LITERAL") {
+                        value = `"${macroponentConfigProperty.value}"`
                     }
+
+                    if (macroponentConfigProperty?.type == "CONTEXT_BINDING") {
+                        value = `@context.${macroponentConfigProperty.binding.category}.${macroponentConfigProperty.binding?.address?.join(".")}`
+                    }
+
+                    if (macroponentConfigProperty?.type == "DATA_OUTPUT_BINDING") {
+                        value = `@data.${macroponentConfigProperty.binding?.address?.join(".")}`
+                    }
+
                 }
 
                 return {
-                    ...item,
-                    value,
-                    valueTranslated
+                    ...prop,
+                    value
                 }
             }))
         }
@@ -46,30 +66,33 @@ export default function Properties() {
         }
     }, [])
 
+    if (!data[0]) {
+        return <NoData sectionName="properties" />
+    }
+
     return (
         <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
             {
                 data.map((item, index) => {
 
                     let name = item.name
-                    let type = item.fieldType
+                    let fieldType = item.fieldType
                     let description = item.description
-                    let value = item.valueTranslated
+                    let value = item.value
 
                     return (
                         <Card key={index}>
                             <Flex gap={5} vertical>
                                 <Flex justify="space-between">
-                                    <Flex gap={10}>
-                                     <Text strong>{name}</Text> <Tag color={getTypeColor(type)}>{type}</Tag> 
+                                    <Flex gap={10} align="center">
+                                        <Text strong>{name}</Text> 
+                                        <Tag color={getTypeColor(fieldType)}>{fieldType}</Tag>
                                     </Flex>
-                                    <Flex>
-                                        <Text code>{value}</Text>    
+                                    <Flex style={{ maxWidth: "50%" }}>
+                                        <Text code={!!value}>{value}</Text>
                                     </Flex>
                                 </Flex>
-                                {description && <Text>
-                                    {description}
-                                </Text>}
+                                {description && <Text type="secondary" style={{fontSize: 12}}>{description}</Text>}
                             </Flex>
                         </Card>
                     )

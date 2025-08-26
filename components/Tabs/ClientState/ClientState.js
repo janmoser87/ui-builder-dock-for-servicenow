@@ -8,9 +8,12 @@ import { getTypeColor } from "./Utils"
 // Context
 import { useAppContext } from "../../../contexts/AppContext";
 
+// Components
+import NoData from "./../../NoData"
+
 export default function ClientState() {
 
-    const {tabData, macroponentData} = useAppContext()
+    const { tabData, macroponentData } = useAppContext()
     const [data, setData] = useState([])
 
     useEffect(() => {
@@ -23,6 +26,10 @@ export default function ClientState() {
         }
     }, [])
 
+    if (!data[0]) {
+        return <NoData sectionName="client states" />
+    }
+
     return (
         <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
             {
@@ -33,20 +40,20 @@ export default function ClientState() {
                     let initialValue = ""
 
                     if (item.initialValue?.type == "JSON_LITERAL") {
-                        initialValue = JSON.stringify(item.initialValue.value) 
+                        initialValue = JSON.stringify(item.initialValue.value)
                     }
 
                     return (
                         <Card key={index}>
                             <Flex gap={5} justify="space-between" items="flex-start">
-                                <Flex gap={10}  justify="flex-start" align="flex-start">
-                                    <Text strong>{name}</Text> 
+                                <Flex gap={10} align="center">
+                                    <Text strong>{name}</Text>
                                     <Tag color={getTypeColor(type)}>{type}</Tag>
                                 </Flex>
-                                <Flex style={{maxWidth: "50%"}}>
+                                <Flex style={{ maxWidth: "50%" }}>
                                     <Text code>{initialValue}</Text>
                                 </Flex>
-                            </Flex>                            
+                            </Flex>
                         </Card>
                     )
                 })

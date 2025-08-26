@@ -12,7 +12,7 @@ import { getTabData } from "../scripts/Utils";
 // Context
 import { useAppContext } from "../contexts/AppContext";
 
-export default function App({ onAppReady = ({ tabUrlbase }) => { }, showQuickLinks }) {
+export default function App({ onAppReady = ({ tabUrlbase, isInUiBuilderEditor }) => { }, showQuickLinks }) {
 
 	const { tabData, setTabData } = useAppContext()
 
@@ -20,7 +20,7 @@ export default function App({ onAppReady = ({ tabUrlbase }) => { }, showQuickLin
 		const tabData = await getTabData()
 		if (tabData) {
 			setTabData(tabData)
-			onAppReady({ tabUrlbase: tabData.tabUrlBase })
+			onAppReady({ tabUrlbase: tabData.tabUrlBase, isInUiBuilderEditor: tabData.isInUiBuilderEditor })
 		}
 	}
 	useEffect(() => {
@@ -34,7 +34,7 @@ export default function App({ onAppReady = ({ tabUrlbase }) => { }, showQuickLin
 	if (!tabData.isInServiceNowInstance) {
 		return (
 			<Flex justify="center" items="center" gap={10}>
-				<Text>You are not in ServiceNow.</Text>
+				<Text style={{fontSize: 12}}>You are not in ServiceNow.</Text>
 			</Flex>
 		)
 	}
@@ -42,15 +42,16 @@ export default function App({ onAppReady = ({ tabUrlbase }) => { }, showQuickLin
 	if (!tabData.isInUiBuilderEditor) {
 		return (
 			<Flex justify="center" items="center" gap={10} vertical >
-				{
-					!tabData.isInUiBuilderEditor &&
-					<Flex justify="center" items="center" gap={10}>
-						<Text>You are not in UI Builder editor.</Text>
-					</Flex>
-				}
+
 				{
 					<Flex>
 						<QuickLinks />
+					</Flex>
+				}
+				{
+					!tabData.isInUiBuilderEditor &&
+					<Flex justify="center" >
+						<Text style={{fontSize: 12}}>You are not in supported UI Builder editor (Experience / Page Collection / Component).</Text>
 					</Flex>
 				}
 			</Flex>

@@ -6,6 +6,8 @@ export const getTypeColor = (type) => {
             return "blue";
         case "boolean":
             return "gold";
+        case "number":
+            return "cyan";
         default:
             return "default";
     }
