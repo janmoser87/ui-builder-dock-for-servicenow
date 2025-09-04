@@ -1,67 +1,54 @@
-import { useState, useEffect } from "react";
-import { Flex, Typography, Divider } from "antd";
-const { Title } = Typography;
+import { Flex, Typography, Collapse, Badge } from "antd";
+const { Text } = Typography;
 
 // Context
-import { useAppContext } from "../../../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
 // Components
-import NoData from "./../../NoData"
 import Event from "./Event";
 
 export default function Events() {
 
     const { macroponentData } = useAppContext()
-    const [dispatchedEvents, setDispatchedEvents] = useState([])
-    const [handledEvents, setHandledEvents] = useState([])
 
-    useEffect(() => {
-        try {
-
-            if (macroponentData._dispatchedEvents) {
-                const dispatchedEvents = JSON.parse(macroponentData._dispatchedEvents)
-                setDispatchedEvents(dispatchedEvents)
-            }
-
-            if (macroponentData._handledEvents) {
-                const handledEvents = JSON.parse(macroponentData._handledEvents)
-                setHandledEvents(handledEvents)
-            }
-
-        }
-        catch (e) {
-            setDispatchedEvents([])
-            setHandledEvents([])
-        }
-    }, [])
+    const dispatchedEvents = macroponentData._dispatchedEvents || []
+    const handledEvents = macroponentData._handledEvents || []
 
     return (
-        <Flex vertical gap={10} style={{ height: "400px", overflowY: "auto" }}>
-            <Flex vertical gap={10}>
-                <Title level={5} style={{ margin: 0 }} >Dispatched events</Title>
-                <Divider style={{ margin: 0 }} />
-                <Flex vertical gap={5}>
+        <Flex vertical gap={5}>
+            <Collapse
+                style={{backgroundColor: "white"}}
+                items={[
                     {
-                        dispatchedEvents.map((event, index) => <Event event={event} key={index} />)
+                        key: "dispatchedEvents",
+                        label: (
+                            <Flex justify="space-between">
+                                <Text strong>Dispatched events</Text>
+                                <Badge count={dispatchedEvents.length} color={!!dispatchedEvents[0] ? "green" : "lightgrey"} showZero />
+                            </Flex>
+                        ),
+                        showArrow: !!dispatchedEvents[0],   
+                        children: dispatchedEvents.map((event, index) => <Event event={event} key={index} />)
                     }
+                ]}
+            />
+            <Collapse
+                style={{backgroundColor: "white"}}
+                items={[
                     {
-                        !dispatchedEvents[0] && <NoData sectionName="dispatched events" />
+                        key: "handledEvents",
+                        label: (
+                            <Flex justify="space-between">
+                                <Text strong>Handled events</Text>
+                                <Badge count={handledEvents.length} color={!!handledEvents[0] ? "green" : "lightgrey"} showZero/>
+                            </Flex>
+                        ),
+                        showArrow: !!handledEvents[0], 
+                        children: handledEvents.map((event, index) => <Event event={event} key={index} />)
                     }
-                </Flex>
-            </Flex>
-            <Flex vertical gap={10}>
-                <Title level={5} style={{ margin: 0 }} >Handled events</Title >
-                <Divider style={{ margin: 0 }} />
-                <Flex vertical gap={5}>
-                    {
-                        handledEvents.map((event, index) => <Event event={event} key={index} />)
-                    }
-                    {
-                        !handledEvents[0] && <NoData sectionName="handled events" />
-                    }
-                </Flex>
-            </Flex>
+                ]}
+            />
         </Flex>
-    );
+    )
 
 }

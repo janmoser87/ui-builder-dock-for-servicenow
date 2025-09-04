@@ -3,7 +3,7 @@ import { useState } from "react"
 const { Text } = Typography;
 
 // Components
-import Code from "../../../Code"
+import Code from "~components/Code"
 
 export default function Event({ data }) {
 

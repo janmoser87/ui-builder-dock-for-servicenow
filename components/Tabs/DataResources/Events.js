@@ -1,4 +1,4 @@
-import { Flex, Typography, Card } from "antd";
+import { Flex, Typography, Card, Empty } from "antd";
 const { Text } = Typography;
 
 // Utils
@@ -8,6 +8,7 @@ import { getEventName, getTargetsCount, getEventCardBackgroundColor } from "./Ut
 import Targets from "./Targets";
 
 export default function Events({ data }) {
+
     return (
         <Flex vertical gap={5}>
             {
@@ -28,6 +29,9 @@ export default function Events({ data }) {
                         </Card>
                     )
                 })
+            }
+            {
+                !data[0] && <Empty description="No event mapping implemented." />
             }
         </Flex>
     )

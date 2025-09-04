@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 const AppContext = createContext();
 
@@ -11,34 +11,17 @@ export const useAppContext = () => {
 }
 
 export const AppContextProvider = ({ children }) => {
-    const [macroponentData, setMacroponentData] = useState(null);
-    const [tabData, setTabData] = useState(null);
-
-    useEffect(() => {
-        
-    }, []);
-
-    const getClientScriptByID = (sysID) => {
-        if (!macroponentData) return null
-        const clientScripts = JSON.parse(macroponentData._scripts)
-        const clientScript = clientScripts.find(script => script.sys_id == sysID)
-        return clientScript
-    }
-
-    const getDataResourceByID = (dataResourceID) => {
-        if (!macroponentData) return null
-        const dataResources = JSON.parse(macroponentData.data)
-        const dataResource = dataResources.find(resource => resource.elementId == dataResourceID)
-        return dataResource
-    }
+    const [macroponentData, setMacroponentData] = useState(null)
+    const [tabData, setTabData] = useState(null)
+    const [loadedArticles, setLoadedArticles] = useState(null)
 
     const contextValue = {
         macroponentData,
         setMacroponentData,
         tabData,
         setTabData,
-        getClientScriptByID,
-        getDataResourceByID
+        loadedArticles,
+        setLoadedArticles
     };
 
     return (

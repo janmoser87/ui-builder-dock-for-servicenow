@@ -53,6 +53,33 @@ export const extractUrlProps = (url) => {
     }
 }
 
+export const getIsInServiceNow = (url) => {
+    try {
+        return url.includes("service-now.com/")
+    }
+    catch (e) {
+        return false
+    }
+}
+
+export const getIsInUIBuilder = (url) => {
+    try {
+        return url.includes("service-now.com/now/builder/ui/")
+    }
+    catch (e) {
+        return false
+    }
+}
+
+export const getIsInUIBuilderSupportedPage = (url) => {
+    try {
+        return url.includes("now/builder/ui/edit/") || url.includes("now/builder/ui/component/")
+    }
+    catch (e) {
+        return false
+    }
+}
+
 export const getTabData = () => {
 
     return new Promise((resolve) => {
@@ -68,14 +95,17 @@ export const getTabData = () => {
                 return
             }
 
+            const url = tab.url
+
             resolve({
                 tab: tabs[0],
                 tabID: tabs[0].id,
-                tabUrlFull: tabs[0].url,
-                tabUrlBase: tabs[0].url.split("/")[2],
-                tabUrlProps: extractUrlProps(tabs[0].url),
-                isInServiceNowInstance: tabs[0].url.includes("service-now.com"),
-                isInUiBuilderEditor: tabs[0].url.includes("now/builder/ui/edit/") || tabs[0].url.includes("now/builder/ui/component/")
+                tabUrlFull: url,
+                tabUrlBase: url.split("/")[2],
+                tabUrlProps: extractUrlProps(url),                
+                isInServiceNow: getIsInServiceNow(url),
+                isInUIBuilder: getIsInUIBuilder(url),
+                isInUIBuilderSupportedPage: getIsInUIBuilderSupportedPage(url)
             })
 
         })

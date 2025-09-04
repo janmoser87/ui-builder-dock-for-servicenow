@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Flex, Card, Tag, Typography } from "antd";
 const { Text } = Typography;
 
@@ -6,41 +5,46 @@ const { Text } = Typography;
 import { getTypeColor } from "./Utils"
 
 // Context
-import { useAppContext } from "../../../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
 // Components
-import NoData from "./../../NoData"
+import NoData from "~components/NoData"
 
 export default function ClientState() {
 
-    const { tabData, macroponentData } = useAppContext()
-    const [data, setData] = useState([])
+    const { macroponentData } = useAppContext()
 
-    useEffect(() => {
-        try {
-            const data = JSON.parse(macroponentData.state_properties)
-            setData(data)
-        }
-        catch (e) {
-            setData([])
-        }
-    }, [])
 
-    if (!data[0]) {
+    let clientStates = []
+    try {
+        clientStates = JSON.parse(macroponentData.state_properties)
+    }
+     catch(e) {}
+
+    if (!clientStates[0]) {
         return <NoData sectionName="client states" />
     }
 
     return (
         <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
             {
-                data.map((item, index) => {
+                clientStates.map((clientState, index) => {
 
-                    let name = item.name
-                    let type = item.valueType
-                    let initialValue = ""
+                    let name = clientState.name
+                    let type = clientState.valueType
+                    let initialValue = clientState.initialValue === null ? "null" : clientState.initialValue?.type
 
-                    if (item.initialValue?.type == "JSON_LITERAL") {
-                        initialValue = JSON.stringify(item.initialValue.value)
+                    if (clientState.initialValue?.type == "JSON_LITERAL") {
+                        try {
+                            initialValue = JSON.stringify(clientState.initialValue.value)
+                        }
+                         catch(e) {}
+                    }
+
+                    if (clientState.initialValue?.type == "CONTEXT_BINDING") {
+                        if (clientState.initialValue?.binding?.category == "props") {
+                            initialValue = `@context.props.${clientState.initialValue.binding.address.join(".")}`  
+                        }
                     }
 
                     return (

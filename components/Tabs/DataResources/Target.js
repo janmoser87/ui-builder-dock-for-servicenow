@@ -9,7 +9,7 @@ import { getTargetType, getTargetBody, isConditionalTarget } from "./Utils"
 import Event from "./TargetTypes/Event";
 import DataBroker from "./TargetTypes/DataBroker";
 import ClientScript from "./TargetTypes/ClientScript";
-import Code from "../../Code";
+import Code from "~components/Code";
 
 export default function Target({ data }) {
 

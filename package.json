@@ -1,7 +1,7 @@
 {
 	"name": "ui-builder-dock-for-servicenow",
 	"displayName": "UI Builder Dock for ServiceNow",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "A lightweight utility that enhances ServiceNow UI Builder development by making key parts easier to explore and understand.",
 	"author": "Jan Moser <m.janmoser@gmail.com>",
 	"homepage": "https://myuibcorner.com",
@@ -15,7 +15,8 @@
 		"antd": "^5.24.5",
 		"plasmo": "0.90.3",
 		"react": "18.2.0",
-		"react-dom": "18.2.0"
+		"react-dom": "18.2.0",
+		"react-error-boundary": "^6.0.0"
 	},
 	"devDependencies": {
 		"@ianvs/prettier-plugin-sort-imports": "4.1.1",
@@ -35,7 +36,9 @@
 				"resources": [
 					"inject.js"
 				],
-				"matches": ["https://*.service-now.com/*"]
+				"matches": [
+					"https://*.service-now.com/*"
+				]
 			}
 		]
 	}

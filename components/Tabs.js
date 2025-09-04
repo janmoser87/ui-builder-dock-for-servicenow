@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Tabs, Spin, Flex, Alert } from "antd";
+import { Tabs, Spin, Flex, Alert, Button } from "antd";
 
 // Components
 import DataResources from "./Tabs/DataResources/DataResources";
@@ -9,19 +9,16 @@ import PageProperties from "./Tabs/PageProperties/PageProperties";
 import Events from "./Tabs/Events/Events";
 
 // Utils
-import { fetchTableData, getGck } from "scripts/Utils";
+import { fetchTableData, getGck } from "~scripts/Utils";
 
 // Context
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
-// Components
-import PageCollectionLink from "./Tabs/PageCollectionLink";
-
-export default function Tabs({ onChange = () => { } }) {
+export default function Tabs() {
 
     const { tabData, macroponentData, setMacroponentData } = useAppContext()
 
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
 
     const getMacroponentData = async () => {
@@ -79,12 +76,12 @@ export default function Tabs({ onChange = () => { } }) {
             /**
              * UX Client scripts
              */
-            let [scriptsErr, scriptsData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_client_script", g_ck, "macroponent=" + macroponentID)
+            let [scriptsErr, scriptsData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_client_script", g_ck, `sysparm_query=macroponent=${macroponentID}^type=default`)
             if (scriptsErr) {
                 setError(scriptsErr)
                 return
             }
-            macroponent._scripts = JSON.stringify(scriptsData)
+            macroponent._scripts = scriptsData
 
             /**
              * Excluded scopes for Events. 
@@ -104,33 +101,37 @@ export default function Tabs({ onChange = () => { } }) {
             /**
              * Dispatched events
              */
-            if (macroponent.dispatched_events.length > 0) {
-                let [dispatchedEventsErr, dispatchedEventsData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_event", g_ck, `sysparm_query=sys_idIN${macroponent.dispatched_events}^${exclusionQuery}`)
+            const dispatchedEventIDs = [...new Set(macroponent.dispatched_events.split(",").filter(Boolean))]
+            if (dispatchedEventIDs[0]) {
+                let [dispatchedEventsErr, dispatchedEventsData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_event", g_ck, `sysparm_query=sys_idIN${dispatchedEventIDs}^${exclusionQuery}`)
                 if (dispatchedEventsErr) {
                     setError(dispatchedEventsErr)
                     return
                 }
-                macroponent._dispatchedEvents = JSON.stringify(dispatchedEventsData)
+                macroponent._dispatchedEvents = dispatchedEventsData
             }
 
             /**
              * Handled events
              */
-            if (macroponent.handled_events.length > 0) {
-                let [handledEventsErr, handledEventsData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_event", g_ck, `sysparm_query=sys_idIN${macroponent.handled_events}^${exclusionQuery}`)
+            const handledEventIDs = [...new Set(macroponent.handled_events.split(",").filter(Boolean))]
+            if (handledEventIDs[0]) {
+                let [handledEventsErr, handledEventsData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_event", g_ck, `sysparm_query=sys_idIN${handledEventIDs}^${exclusionQuery}`)
                 if (handledEventsErr) {
                     setError(handledEventsErr)
                     return
                 }
-                macroponent._handledEvents = JSON.stringify(handledEventsData)
+                macroponent._handledEvents = handledEventsData
             }
-            
+
+
+
             /**
              * Values of properties of Experience and Page Collections are on parent (sys_ux_screen.macroponent_config)
              */
             if (pageType == "experience" || pageType == "pc") {
-                macroponent._parent_screen_macroponent_config = parentData[0].macroponent_config    
-            } 
+                macroponent._parent_screen_macroponent_config = parentData[0].macroponent_config
+            }
 
             setMacroponentData(macroponent)
 
@@ -145,7 +146,9 @@ export default function Tabs({ onChange = () => { } }) {
 
 
     useEffect(() => {
-        getMacroponentData()
+        if (!macroponentData) {
+            getMacroponentData()
+        }
     }, [])
 
     if (loading) {
@@ -182,7 +185,15 @@ export default function Tabs({ onChange = () => { } }) {
 
     const getTabExtraContent = () => {
         if (tabData.tabUrlProps.type == "pc") {
-            return <PageCollectionLink sysID={macroponentData.extension_point?.value} />
+            return (
+                <Button
+                    type="dashed"
+                    size="small"
+                    style={{ marginRight: 10 }}
+                    onClick={() => chrome.tabs.create({ url: `https://${tabData.tabUrlBase}/sys_ux_extension_point.do?sys_id=${macroponentData?.extension_point?.value}`, index: tabData.tab.index + 1, active: false })}>
+                    Open Extension Point
+                </Button>
+            )
         }
         return null
     }
@@ -205,7 +216,7 @@ export default function Tabs({ onChange = () => { } }) {
 
     return (
         <Flex vertical gap={10} style={{ width: "100%" }}>
-            <Tabs tabBarExtraContent={getTabExtraContent()} defaultActiveKey="1" items={items} onChange={onChange} />
+            <Tabs tabBarExtraContent={getTabExtraContent()} defaultActiveKey="1" items={items} />
         </Flex>
     )
 

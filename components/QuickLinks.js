@@ -4,7 +4,7 @@ import * as Icons from '@ant-design/icons';
 import { useState } from "react";
 
 // Context
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
 const links = [
     { name: "UI Builder", targetType: "direct", target: "/now/builder/ui/home", icon: "AppstoreOutlined", color: "#2980b9", group: "UI Builder", acceptsFilter: false },
@@ -74,7 +74,7 @@ export default function QuickLinks() {
         if (item.targetType === "table") {
             url += `/now/nav/ui/classic/params/target/${item.target}_list.do${getSysparmQuery(item, enforcedField)}`
         }
-        chrome.tabs.create({ url, index: tabData.tab.index + 1 })
+        chrome.tabs.create({ url, index: tabData.tab.index + 1, active: false })
     }
 
     function handleNewButtonClick(item) {

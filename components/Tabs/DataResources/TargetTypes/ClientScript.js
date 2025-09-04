@@ -1,27 +1,28 @@
-import { Flex, Typography, Button } from "antd";
-import { useState } from "react"
+import { Typography, Collapse } from "antd";
 const { Text } = Typography;
 
 // Context
-import { useAppContext } from "../../../../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
 // Components
-import Code from "../../../Code"
+import Code from "~components/Code"
+
+// Utils
+import { getClientScriptByID } from "./../Utils"
 
 export default function ClientScript({ data }) {
-
-    const { getClientScriptByID } = useAppContext()
-    const [showClientScript, setShowClientScript] = useState(false)
-    const clientScript = getClientScriptByID(data.sysId) || null
+    const { macroponentData } = useAppContext()
+    const clientScript = getClientScriptByID(macroponentData, data.sysId)
 
     if (!clientScript) return null
 
     return (
-        <Flex vertical>
-            <Button onClick={() => setShowClientScript(!showClientScript)} size="small" style={{ fontSize: "12px" }} color="default" variant="filled">
-                {showClientScript ? "Hide" : "Show"} <Text strong style={{ fontSize: "12px" }}>"{clientScript.sys_name}"</Text> script
-            </Button>
-            {showClientScript && <Code code={clientScript.script} />}
-        </Flex>
+        <Collapse items={[
+            {
+                key: "script",
+                label: <Text><Text strong>"{clientScript.sys_name}"</Text> script</Text>,
+                children: <Code code={clientScript.script} />
+            }
+        ]}/>
     )
 }

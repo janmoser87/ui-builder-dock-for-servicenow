@@ -12,7 +12,7 @@ export default function Code({ code }) {
                 borderRadius: 8,
                 fontFamily: "monospace",
                 whiteSpace: "pre-wrap",
-                fontSize: 12,
+                fontSize: 11,
             }}
         >
             {code}

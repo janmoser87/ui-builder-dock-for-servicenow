@@ -4,7 +4,7 @@ export const removeSnPrefixes = (eventName) => {
     eventNameAdjusted = eventNameAdjusted.replace("sn_uxf_page.", "");
     eventNameAdjusted = eventNameAdjusted.replace("MACROPONENT_", "");
     eventNameAdjusted = eventNameAdjusted.replace("NOW_UXF_PAGE#", "");
-    return eventNameAdjusted;    
+    return eventNameAdjusted;
 }
 
 export const getEventName = (event) => {
@@ -27,12 +27,12 @@ export const getEventCardBackgroundColor = (event) => {
 
     if (eventName == "DATA_FETCH_INITIATED" || eventName == "DATA_OP_INITIATED") {
         backgroundColor = "#fcefe4"
-    }  
-    
+    }
+
     if (eventName == "DATA_FETCH_SUCCEEDED" || eventName == "DATA_OP_SUCCEEDED") {
         backgroundColor = "#ebfaf2"
     }
-    
+
     if (eventName == "DATA_FETCH_FAILED" || eventName == "DATA_OP_FAILED") {
         backgroundColor = "#fceceb"
     }
@@ -56,14 +56,14 @@ export const getTargetType = (target) => {
     }
 
     targetName = removeSnPrefixes(targetName)
-    return targetName   
+    return targetName
 }
 
 export const getTargetBody = (target) => {
     let targetBody = null
 
     if (target.type == "EVENT") {
-        targetBody = target.event || null        
+        targetBody = target.event || null
     }
 
     if (target.type == "DATABROKER_OP") {
@@ -72,7 +72,7 @@ export const getTargetBody = (target) => {
 
     if (target.type == "CLIENT_SCRIPT") {
         targetBody = target.clientScript || null
-    }    
+    }
 
     return targetBody
 }
@@ -148,15 +148,32 @@ export const getMappingsItemColor = (eventName) => {
 
     if (eventName == "DATA_FETCH_INITIATED" || eventName == "DATA_OP_INITIATED") {
         backgroundColor = "#fcefe4"
-    }  
-    
+    }
+
     if (eventName == "DATA_FETCH_SUCCEEDED" || eventName == "DATA_OP_SUCCEEDED") {
         backgroundColor = "#ebfaf2"
     }
-    
+
     if (eventName == "DATA_FETCH_FAILED" || eventName == "DATA_OP_FAILED") {
         backgroundColor = "#fceceb"
     }
 
     return backgroundColor
+}
+
+export const getDataResourceByID = (macroponentData, dataResourceID) => {
+    if (!macroponentData) return null
+    let dataResources = []
+    try {
+        dataResources = JSON.parse(macroponentData.data)
+    }
+    catch (e) { }
+    const dataResource = dataResources.find(resource => resource.elementId == dataResourceID)
+    return dataResource
+}
+
+export const getClientScriptByID = (macroponentData, sysID) => {
+    if (!macroponentData) return null
+    const clientScript = macroponentData._scripts.find(script => script.sys_id == sysID)
+    return clientScript
 }

@@ -7,12 +7,12 @@ import Tabs from "./Tabs"
 import QuickLinks from "./QuickLinks";
 
 // Utils
-import { getTabData } from "../scripts/Utils";
+import { getTabData } from "~scripts/Utils";
 
 // Context
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
-export default function App({ onAppReady = ({ tabUrlbase, isInUiBuilderEditor }) => { }, showQuickLinks }) {
+export default function App({ onAppReady = (tabData) => { }, showQuickLinks }) {
 
 	const { tabData, setTabData } = useAppContext()
 
@@ -20,7 +20,7 @@ export default function App({ onAppReady = ({ tabUrlbase, isInUiBuilderEditor })
 		const tabData = await getTabData()
 		if (tabData) {
 			setTabData(tabData)
-			onAppReady({ tabUrlbase: tabData.tabUrlBase, isInUiBuilderEditor: tabData.isInUiBuilderEditor })
+			onAppReady(tabData)
 		}
 	}
 	useEffect(() => {
@@ -31,7 +31,7 @@ export default function App({ onAppReady = ({ tabUrlbase, isInUiBuilderEditor })
 		return
 	}
 
-	if (!tabData.isInServiceNowInstance) {
+	if (!tabData.isInServiceNow) {
 		return (
 			<Flex justify="center" items="center" gap={10}>
 				<Text style={{fontSize: 12}}>You are not in ServiceNow.</Text>
@@ -39,7 +39,7 @@ export default function App({ onAppReady = ({ tabUrlbase, isInUiBuilderEditor })
 		)
 	}
 
-	if (!tabData.isInUiBuilderEditor) {
+	if (!tabData.isInUIBuilder || !tabData.isInUIBuilderSupportedPage) {
 		return (
 			<Flex justify="center" items="center" gap={10} vertical >
 
@@ -49,9 +49,16 @@ export default function App({ onAppReady = ({ tabUrlbase, isInUiBuilderEditor })
 					</Flex>
 				}
 				{
-					!tabData.isInUiBuilderEditor &&
+					!tabData.isInUIBuilder &&
 					<Flex justify="center" >
-						<Text style={{fontSize: 12}}>You are not in supported UI Builder editor (Experience / Page Collection / Component).</Text>
+						<Text style={{fontSize: 12}}>You are not in UI Builder.</Text>
+					</Flex>
+				}
+				{
+					tabData.isInUIBuilder && !tabData.isInUIBuilderSupportedPage &&
+					<Flex justify="center" align="center" vertical>
+						<Text style={{fontSize: 12}}>You are not in supported UI Builder page</Text>
+						<Text style={{fontSize: 12}}>(Experience page / Page Collection / Component).</Text>
 					</Flex>
 				}
 			</Flex>

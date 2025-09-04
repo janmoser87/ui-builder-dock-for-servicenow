@@ -1,25 +1,22 @@
-import { useState } from "react";
-import { Button, Flex, Card, Typography } from "antd";
+import { Typography, Collapse } from "antd";
 const { Text } = Typography;
 
 // Components
-import Code from "../../Code"
+import Code from "~components/Code"
 
-export default function ClientScript({item}) {
-
-    const [showCode, setShowCode] = useState(false)
+export default function ClientScript({ item }) {
 
     return (
-        <Card>
-            <Flex gap={5} justify="space-between">
-                <Flex gap={10}>
-                    <Text strong>{item.name}</Text>
-                </Flex>
-                <Flex>
-                    <Button color="purple" style={{ fontSize: "12px" }}  variant="filled" size="small" onClick={() => setShowCode(!showCode)}>{showCode ? "Hide" : "Show"} code</Button>
-                </Flex>
-            </Flex>
-            {showCode && <Code code={item.script} />}
-        </Card>
+        <Collapse 
+            items={[
+                {
+                    key: "clientscript",
+                    label: <Text strong>{item.name}</Text>,
+                    children: <Code code={item.script} />
+                }
+            ]} 
+            style={{backgroundColor: "white"}}
+        />
     )
+
 }

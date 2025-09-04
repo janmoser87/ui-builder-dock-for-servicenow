@@ -6,3 +6,7 @@ body {
 	width: 700px;
 	height: 400px;
 }
+
+.vtop .ant-table-cell {
+  vertical-align: top !important;
+}

@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Flex, Card, Tag, Typography } from "antd";
 const { Text } = Typography;
 
@@ -6,65 +5,75 @@ const { Text } = Typography;
 import { getTypeColor } from "./Utils"
 
 // Context
-import { useAppContext } from "../../../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
 
 // Components
-import NoData from "./../../NoData"
+import NoData from "~components/NoData"
 
 export default function Properties() {
 
     const { tabData, macroponentData } = useAppContext()
-    const [data, setData] = useState([])
 
-    useEffect(() => {
-        try {
+    let data = []
 
-            // Getting type of current UIB page
-            const { tabUrlProps: { type: pageType } } = tabData
+    try {
 
-            // Definition of props
-            let macroponentProps = JSON.parse(macroponentData.props)
+        // Getting type of current UIB page
+        const { tabUrlProps: { type: pageType } } = tabData
 
-            // Mapping Props to Values
-            setData(macroponentProps.map(prop => {
+        // Definition of props
+        let macroponentProps = JSON.parse(macroponentData.props)
 
-                let value
+        // Mapping Props to default values
+        data = macroponentProps.map(prop => {
 
-                // For Component, the property value is on macroponent.props right away
-                if (pageType == "component") {
-                    value = `"${prop.defaultValue}"`
+            let value
+
+            // For Component, the property value is on macroponent.props right away
+            if (pageType == "component") {
+
+                value = `"${prop.defaultValue}"`
+
+                if (prop.fieldType == "json" || "boolean") {
+                    try {
+                        value = `${JSON.stringify(prop.defaultValue)}`
+                    }
+                    catch (e) { }
                 }
 
-                // For Experience and Page Collection, we need to get the value from parent (sys_ux_screen.macroponent_config)
-                if (pageType == "experience" || pageType == "pc") {
+                if (prop.fieldType == "number") {
+                    value = `${prop.defaultValue}`
+                }
+            }
 
-                    let macroponentConfig = JSON.parse(macroponentData._parent_screen_macroponent_config)
-                    let macroponentConfigProperty = macroponentConfig[prop.name]
+            // For Experience and Page Collection, we need to get the value from parent (sys_ux_screen.macroponent_config)
+            if (pageType == "experience" || pageType == "pc") {
 
-                    if (macroponentConfigProperty?.type == "JSON_LITERAL") {
-                        value = `"${macroponentConfigProperty.value}"`
-                    }
+                let macroponentConfig = JSON.parse(macroponentData._parent_screen_macroponent_config)
+                let macroponentConfigProperty = macroponentConfig[prop.name]
 
-                    if (macroponentConfigProperty?.type == "CONTEXT_BINDING") {
-                        value = `@context.${macroponentConfigProperty.binding.category}.${macroponentConfigProperty.binding?.address?.join(".")}`
-                    }
-
-                    if (macroponentConfigProperty?.type == "DATA_OUTPUT_BINDING") {
-                        value = `@data.${macroponentConfigProperty.binding?.address?.join(".")}`
-                    }
-
+                if (macroponentConfigProperty?.type == "JSON_LITERAL") {
+                    value = `"${macroponentConfigProperty.value}"`
                 }
 
-                return {
-                    ...prop,
-                    value
+                if (macroponentConfigProperty?.type == "CONTEXT_BINDING") {
+                    value = `@context.${macroponentConfigProperty.binding.category}.${macroponentConfigProperty.binding?.address?.join(".")}`
                 }
-            }))
-        }
-        catch (e) {
-            setData([])
-        }
-    }, [])
+
+                if (macroponentConfigProperty?.type == "DATA_OUTPUT_BINDING") {
+                    value = `@data.${macroponentConfigProperty.binding?.address?.join(".")}`
+                }
+
+            }
+
+            return {
+                ...prop,
+                value
+            }
+        })
+    }
+    catch (e) {
+    }
 
     if (!data[0]) {
         return <NoData sectionName="properties" />
@@ -85,14 +94,14 @@ export default function Properties() {
                             <Flex gap={5} vertical>
                                 <Flex justify="space-between">
                                     <Flex gap={10} align="center">
-                                        <Text strong>{name}</Text> 
+                                        <Text strong>{name}</Text>
                                         <Tag color={getTypeColor(fieldType)}>{fieldType}</Tag>
                                     </Flex>
                                     <Flex style={{ maxWidth: "50%" }}>
                                         <Text code={!!value}>{value}</Text>
                                     </Flex>
                                 </Flex>
-                                {description && <Text type="secondary" style={{fontSize: 12}}>{description}</Text>}
+                                {description && <Text type="secondary" style={{ fontSize: 12 }}>{description}</Text>}
                             </Flex>
                         </Card>
                     )

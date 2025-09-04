@@ -4,7 +4,7 @@ const { Text } = Typography;
 // Components
 import Target from "./Target";
 
-export default function Targets({ data }) {
+export default function Targets({ data = [] }) {
     return (
         <Flex vertical gap={5}>
             {

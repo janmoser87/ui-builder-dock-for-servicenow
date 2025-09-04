@@ -2,20 +2,23 @@ import { Flex, Typography } from "antd";
 const { Text } = Typography;
 
 // Context
-import { useAppContext } from "../../../../contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext";
+
+// Utils
+import { getDataResourceByID } from "./../Utils"
 
 export default function DataBroker({data}) {
-
-    const { getDataResourceByID } = useAppContext()
-
+    const { macroponentData } = useAppContext()
+    const dataResource = getDataResourceByID(macroponentData, data.parentResourceId)
+    
     if (data.operationName) {
         return (
             <Flex>
                 <Text code style={{fontSize: "12px"}}>{data.operationName}</Text>
-                <Text code style={{fontSize: "12px"}}>{getDataResourceByID(data.parentResourceId).elementLabel || data.parentResourceId}</Text>
+                <Text code style={{fontSize: "12px"}}>{dataResource?.elementLabel || data.parentResourceId}</Text>
             </Flex>
         )
     }
 
-    return
+    return null
 }
