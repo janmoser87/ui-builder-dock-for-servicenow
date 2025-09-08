@@ -32,7 +32,7 @@ export default function About() {
 							Jan Moser
 						</Title>
 						<Text type="secondary" style={{ fontSize: 12 }}>
-							Made with ❤️ · v1.0.8
+							Made with ❤️ · v1.0.9
 						</Text>
 					</Flex>
 				</Flex>
