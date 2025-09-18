@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SettingOutlined, ThunderboltOutlined, BranchesOutlined, LinkOutlined } from "@ant-design/icons";
 import { Typography, Collapse, Tag, Table, Space, Card, Flex, Alert, Empty, Badge, Button, Input, Spin } from "antd";
 const { Text, Link } = Typography;
+
+import { Storage } from "@plasmohq/storage"
+const storage = new Storage({ area: "local" })
+const storage_prefix = "lastSearchResults_"
 
 // Utils
 import { fetchTableData, getGck } from "scripts/Utils";
@@ -98,7 +102,7 @@ const searchSources = {
                     render: (v, r) => {
 
                         let screensCount = r._screens?.length || 0
-                        if (screensCount == 1) {
+                        if (screensCount === 1) {
                             screensCount = 0 // Setting to 0 so badge won't show
                         }
 
@@ -619,6 +623,20 @@ export default function Search() {
     const [searchResults, setSearchResults] = useState([])
     const [stats, setStats] = useState([])
 
+    const getLastSearchResults = async () => {
+        let lastSearchResults = await storage.get(`${storage_prefix}${selectedSearchSource}`) || { stats: [], results: [] } 
+        setStats(lastSearchResults.stats)
+        setSearchResults(lastSearchResults.results)
+    }
+
+    const setLastSearchResults = async (lastSearchResults) => {
+        await storage.set(`${storage_prefix}${selectedSearchSource}`, lastSearchResults)
+    }
+
+    useEffect(() => {
+        getLastSearchResults()
+    }, [selectedSearchSource])
+
     const doSearch = async (searchText) => {
         try {
             setLoading(true)
@@ -631,6 +649,8 @@ export default function Search() {
 
             setStats(stats)
             setSearchResults(results)
+            setLastSearchResults({ stats, results })
+
         } catch (e) {
             setError(e?.message || "Unknown error");
             setSearchResults([])

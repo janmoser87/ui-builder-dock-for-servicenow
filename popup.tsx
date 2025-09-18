@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Flex, ConfigProvider, Typography, Button, Image, Alert } from "antd";
+import { Flex, ConfigProvider, Typography, Button, Image, Alert, Space, Tag, Badge } from "antd";
 const { Title, Text } = Typography
 import { QuestionCircleOutlined, CloseOutlined, ThunderboltOutlined, ReadOutlined, SearchOutlined } from '@ant-design/icons';
 import logo from "url:./assets/icon.development.png"
@@ -63,7 +63,11 @@ function IndexPopup() {
 							<Flex gap={10} align="center" justify="flex-start" style={{ marginBottom: 5 }}>
 								<Image src={logo} width={32} preview={false} />
 								<Flex vertical>
-									<Title level={4} style={{ margin: 0 }}>UI Builder Dock</Title>
+									<Badge count={`v${process.env.PLASMO_PUBLIC_VERSION}`} offset={[30,20]} color="gold">
+										<Title level={4} style={{ margin: 0 }}>
+											UI Builder Dock
+										</Title>
+									</Badge>
 									<Text>{tabData?.tabUrlBase}</Text>
 								</Flex>
 							</Flex>
