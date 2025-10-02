@@ -24,7 +24,7 @@ const links = [
     { name: "Update Sets", targetType: "table", target: "sys_update_set", icon: "ExportOutlined", color: "#6366f1", group: "Backend", acceptsFilter: true, filterFields: ["name", "description", "sys_created_by"], showNewButton: true },
     { name: "Studio", targetType: "direct", target: "/$studio.do", icon: "LayoutOutlined", color: "#10b981", group: "Dev Tools", acceptsFilter: false },
     { name: "Background scripts", targetType: "direct", target: "/now/nav/ui/classic/params/target/sys.scripts.modern.do", icon: "ConsoleSqlOutlined", color: "#22c55e", group: "Backend", acceptsFilter: false },
-    { name: "Flow Designer", targetType: "direct", target: "/$flow-designer.do", icon: "BranchesOutlined", color: "#8e44ad", group: "Automation", acceptsFilter: false },
+    { name: "Flow Designer", targetType: "direct", target: "/$flow-designer.do", icon: "BranchesOutlined", color: "#8e44ad", group: "Automation", acceptsFilter: true, filterFields: ["name", "internal_name", "sys_created_by"], filterTargetTypeOverride: "sys_hub_flow" },
 
 ]
 
@@ -68,9 +68,18 @@ export default function QuickLinks() {
 
     function handleLinkClick(item, enforcedField) {
         let url = `https://${tabData.tabUrlBase}`
-        if (item.targetType === "direct") {
+
+        // Direct link without override
+        if (item.targetType === "direct" && (!item.filterTargetTypeOverride || item.filterTargetTypeOverride && !filter)) {
             url += item.target
         }
+
+        // Direct link with override in case of filter
+        if (item.targetType === "direct" && item.filterTargetTypeOverride && filter) {
+            url += `/now/nav/ui/classic/params/target/${item.filterTargetTypeOverride}_list.do${getSysparmQuery(item, enforcedField)}`
+        }
+
+        // Table link
         if (item.targetType === "table") {
             url += `/now/nav/ui/classic/params/target/${item.target}_list.do${getSysparmQuery(item, enforcedField)}`
         }
@@ -109,20 +118,25 @@ export default function QuickLinks() {
                             <Col key={index} span={8}>
                                 <Card
                                     hoverable={(filter == "" || item.acceptsFilter) ? true : false}
-                                    onClick={() => handleLinkClick(item)}
+                                    onClick={() => {
+                                        if (filter && !item.acceptsFilter) return
+                                        handleLinkClick(item)
+                                    }
+                                    }
                                     style={{ opacity: (filter == "" || item.acceptsFilter) ? 1 : 0.2, cursor: "pointer", padding: 0, borderLeft: `4px solid ${item.color}`, backgroundColor: "#f8fafb", borderRadius: 4, height: "100%" }}
                                 >
                                     <Flex vertical>
-                                        
+
                                         <Flex align="center" gap={12} >
                                             <CardIcon style={{ fontSize: 18, color: item.color }} />
                                             <Text style={{ fontSize: 14 }}>{item.name}</Text>
                                         </Flex>
 
                                         {
-                                                item.showNewButton &&
-                                                <Flex>
-                                                    <Tooltip title="Create new record" styles={{ body: { fontSize: 12, opacity: 0.6 } }}><Button
+                                            item.showNewButton &&
+                                            <Flex>
+                                                <Tooltip title="Create new record" styles={{ body: { fontSize: 12, opacity: 0.6 } }}>
+                                                    <Button
                                                         icon={<AddNewButtonIcon />}
                                                         shape="circle"
                                                         color="purple"
@@ -133,29 +147,29 @@ export default function QuickLinks() {
                                                             handleNewButtonClick(item)
                                                         }}
                                                     />
-                                                    </Tooltip>
-                                                </Flex>
-                                            }
+                                                </Tooltip>
+                                            </Flex>
+                                        }
 
-                                            {
-                                                filter &&
-                                                item.acceptsFilter &&
-                                                <Flex style={{position: "absolute", width: "100%", bottom: -5, left: 0, right: 0, transform: "scale(0.8)"}} justify="end" gap={5}>
-                                                    {
-                                                        item.filterFields.map((field, index) => {
-                                                            return (
-                                                                <Tag.CheckableTag
-                                                                    key={index}
-                                                                    style={{ margin: 0, fontSize: 12 }}
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation()
-                                                                        handleLinkClick(item, field)
-                                                                    }}>{field}</Tag.CheckableTag>
-                                                            )
-                                                        })
-                                                    }
-                                                </Flex>
-                                            }
+                                        {
+                                            filter &&
+                                            item.acceptsFilter &&
+                                            <Flex style={{ position: "absolute", width: "100%", bottom: -5, left: 0, right: 0, transform: "scale(0.8)" }} justify="end" gap={5}>
+                                                {
+                                                    item.filterFields.map((field, index) => {
+                                                        return (
+                                                            <Tag.CheckableTag
+                                                                key={index}
+                                                                style={{ margin: 0, fontSize: 12 }}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    handleLinkClick(item, field)
+                                                                }}>{field}</Tag.CheckableTag>
+                                                        )
+                                                    })
+                                                }
+                                            </Flex>
+                                        }
 
                                     </Flex>
                                 </Card>
