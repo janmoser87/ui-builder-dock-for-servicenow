@@ -3,8 +3,8 @@ body {
 	margin: 0;
 	padding: 0;
 	background-color: #f7f2f2;
-	width: 700px;
-	height: 400px;
+	min-height: 400px;
+	overflow-x: hidden;
 }
 
 .vtop .ant-table-cell {

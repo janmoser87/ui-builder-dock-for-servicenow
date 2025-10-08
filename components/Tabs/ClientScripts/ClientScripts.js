@@ -18,7 +18,7 @@ export default function ClientScripts() {
     }
 
     return (
-        <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
+        <Flex vertical gap={5}>
             {
                 clientScripts.map((item, index) => <ClientScript key={index} item={item} />)
             }

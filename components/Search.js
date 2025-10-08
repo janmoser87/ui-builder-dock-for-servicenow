@@ -140,7 +140,7 @@ const searchSources = {
                                     key: "exp",
                                     label: (
                                         <Flex vertical gap={5}>
-                                            <Flex justify="space-between">
+                                            <Flex justify="space-between" align="flex-start">
                                                 <Link onClick={() => { chrome.tabs.create({ url: `https://${tabUrlBase}/now/builder/ui/experience/${exp.sys_id}`, active: false }) }} strong>
                                                     {exp.title}
                                                 </Link>
@@ -574,7 +574,7 @@ const searchSources = {
                                     key: "component",
                                     label: (
                                         <Flex vertical gap={5}>
-                                            <Flex justify="space-between">
+                                            <Flex justify="space-between" align="flex-start">
                                                 <Link disabled={!compatibleWithComponentBuilder} onClick={() => { 
                                                     if (!compatibleWithComponentBuilder) return; 
                                                     chrome.tabs.create({ url: `https://${tabUrlBase}/now/builder/ui/component/${component._metadata.sys_id}`, active: false }) }} 

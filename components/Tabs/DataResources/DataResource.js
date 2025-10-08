@@ -206,7 +206,7 @@ export default function DataResource({ item, onOpenButtonClick = () => { } }) {
                                     {label}
                                 </Title>
                                 <Flex items="center">
-                                    <Flex>
+                                    <Flex align='flex-start'>
                                         <Tag color={(mode == "EAGER" ? "error" : "green")} style={{ fontSize: "10px" }} bordered={false}>{(mode == "EAGER" ? "IMMEDIATELY" : "ONLY WHEN INVOKED")}</Tag>
                                         <Tag color="purple" style={{ fontSize: "10px" }} bordered={false}>{type}</Tag>
                                     </Flex>

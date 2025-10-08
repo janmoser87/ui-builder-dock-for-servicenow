@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tabs, Spin, Flex, Alert, Button } from "antd";
+import { ReloadOutlined } from '@ant-design/icons';
 
 // Components
 import DataResources from "./Tabs/DataResources/DataResources";
@@ -152,7 +153,7 @@ export default function Tabs() {
     }, [])
 
     if (loading) {
-        return <Flex horizontal justify="center" align="center" style={{ width: "100%", padding: 50 }}><Spin /></Flex>
+        return <Flex horizontal justify="center" align="center" flex={1} style={{ marginTop: 20 }}><Spin /></Flex>
     }
 
     const items = [
@@ -184,18 +185,14 @@ export default function Tabs() {
     ]
 
     const getTabExtraContent = () => {
-        if (tabData.tabUrlProps.type == "pc") {
-            return (
-                <Button
-                    type="dashed"
-                    size="small"
-                    style={{ marginRight: 10 }}
-                    onClick={() => chrome.tabs.create({ url: `https://${tabData.tabUrlBase}/sys_ux_extension_point.do?sys_id=${macroponentData?.extension_point?.value}`, index: tabData.tab.index + 1, active: false })}>
-                    Open Extension Point
-                </Button>
-            )
-        }
-        return null
+        return (
+            <Button
+                type="default"
+                icon={<ReloadOutlined />}
+                onClick={() => getMacroponentData()}
+                title="Reload"
+            />
+        )        
     }
 
     if (error) {
@@ -215,8 +212,12 @@ export default function Tabs() {
     }
 
     return (
-        <Flex vertical gap={10} style={{ width: "100%" }}>
-            <Tabs tabBarExtraContent={getTabExtraContent()} defaultActiveKey="1" items={items} />
+        <Flex vertical gap={10} flex={1}>
+            <Tabs
+                tabBarExtraContent={getTabExtraContent()}
+                defaultActiveKey="1"
+                items={items}
+            />
         </Flex>
     )
 

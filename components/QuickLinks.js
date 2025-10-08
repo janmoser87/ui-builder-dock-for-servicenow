@@ -1,7 +1,8 @@
-import { Flex, Typography, Col, Row, Card, Input, Tag, Button, Tooltip } from "antd";
+import { Flex, Typography, Col, Row, Card, Input, Tag, Button, Tooltip, Segmented } from "antd";
 const { Text } = Typography
 import * as Icons from '@ant-design/icons';
 import { useState } from "react";
+import { useStorage } from "@plasmohq/storage/hook"
 
 // Context
 import { useAppContext } from "~contexts/AppContext";
@@ -33,6 +34,10 @@ export default function QuickLinks() {
 
     const { tabData } = useAppContext()
     const [filter, setFilter] = useState("")
+    const [view, setView, {isLoading}] = useStorage("quicklinks_view", "grid") // "grid" | "list"
+
+    const GridIcon = Icons.AppstoreOutlined
+    const ListIcon = Icons.UnorderedListOutlined
 
     /**
      * 
@@ -96,9 +101,80 @@ export default function QuickLinks() {
         chrome.tabs.create({ url, index: tabData.tab.index + 1 })
     }
 
+    const renderCardContent = (item) => {
+        const CardIcon = Icons[item.icon]
+        const AddNewButtonIcon = Icons["PlusOutlined"]
+        const clickable = (filter === "" || item.acceptsFilter)
+        return (
+            <Card
+                hoverable={clickable}
+                onClick={() => {
+                    if (filter && !item.acceptsFilter) return
+                    handleLinkClick(item)
+                }}
+                style={{
+                    opacity: clickable ? 1 : 0.2,
+                    cursor: "pointer",
+                    padding: 0,
+                    borderLeft: `4px solid ${item.color}`,
+                    backgroundColor: "#f8fafb",
+                    borderRadius: 4,
+                    height: "100%",
+                    position: "relative"
+                }}
+            >
+                <Flex vertical>
+                    <Flex align="center" gap={12}>
+                        <CardIcon style={{ fontSize: 18, color: item.color }} />
+                        <Text style={{ fontSize: 14 }}>{item.name}</Text>
+                    </Flex>
+
+                    {item.showNewButton && (
+                        <Flex>
+                            <Tooltip title="Create new record" placement="topLeft" styles={{ body: { fontSize: 12, opacity: 0.6 } }}>
+                                <Button
+                                    icon={<AddNewButtonIcon />}
+                                    shape="circle"
+                                    color="purple"
+                                    variant="filled"
+                                    style={{ position: "absolute", right: -15, top: -15, transform: "scale(0.6)" }}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleNewButtonClick(item)
+                                    }}
+                                />
+                            </Tooltip>
+                        </Flex>
+                    )}
+
+                    {filter && item.acceptsFilter && (
+                        <Flex style={{ position: "absolute", width: "100%", bottom: -5, left: 0, right: 0, transform: "scale(0.8)" }} justify="end" gap={5}>
+                            {item.filterFields.map((field, idx) => (
+                                <Tag.CheckableTag
+                                    key={idx}
+                                    style={{ margin: 0, fontSize: 12 }}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleLinkClick(item, field)
+                                    }}
+                                >
+                                    {field}
+                                </Tag.CheckableTag>
+                            ))}
+                        </Flex>
+                    )}
+                </Flex>
+            </Card>
+        )
+    }
+
+    if (isLoading) {
+        return
+    }
+
     return (
-        <Flex style={{ paddingTop: 10 }} vertical gap={15}>
-            <Flex>
+        <Flex style={{ paddingTop: 10 }} vertical gap={15} flex={1}>
+            <Flex gap={8} align="center">
                 <Input
                     placeholder="Filter to apply after the click on the card 👇"
                     allowClear
@@ -106,78 +182,36 @@ export default function QuickLinks() {
                     onChange={(e) => setFilter(e.target.value)}
                     value={filter}
                 />
-
+                <Segmented
+                    value={view}
+                    onChange={setView}
+                    options={[
+                        { label: <GridIcon />, value: "grid" },
+                        { label: <ListIcon />, value: "list" }
+                    ]}
+                />
             </Flex>
-            <Row gutter={[12, 12]}>
-                {
-                    links.map((item, index) => {
 
-                        const CardIcon = Icons[item.icon]
-                        const AddNewButtonIcon = Icons["PlusOutlined"]
-                        return (
-                            <Col key={index} span={8}>
-                                <Card
-                                    hoverable={(filter == "" || item.acceptsFilter) ? true : false}
-                                    onClick={() => {
-                                        if (filter && !item.acceptsFilter) return
-                                        handleLinkClick(item)
-                                    }
-                                    }
-                                    style={{ opacity: (filter == "" || item.acceptsFilter) ? 1 : 0.2, cursor: "pointer", padding: 0, borderLeft: `4px solid ${item.color}`, backgroundColor: "#f8fafb", borderRadius: 4, height: "100%" }}
-                                >
-                                    <Flex vertical>
-
-                                        <Flex align="center" gap={12} >
-                                            <CardIcon style={{ fontSize: 18, color: item.color }} />
-                                            <Text style={{ fontSize: 14 }}>{item.name}</Text>
-                                        </Flex>
-
-                                        {
-                                            item.showNewButton &&
-                                            <Flex>
-                                                <Tooltip title="Create new record" styles={{ body: { fontSize: 12, opacity: 0.6 } }}>
-                                                    <Button
-                                                        icon={<AddNewButtonIcon />}
-                                                        shape="circle"
-                                                        color="purple"
-                                                        variant="filled"
-                                                        style={{ position: "absolute", right: -15, top: -15, transform: "scale(0.6)" }}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            handleNewButtonClick(item)
-                                                        }}
-                                                    />
-                                                </Tooltip>
-                                            </Flex>
-                                        }
-
-                                        {
-                                            filter &&
-                                            item.acceptsFilter &&
-                                            <Flex style={{ position: "absolute", width: "100%", bottom: -5, left: 0, right: 0, transform: "scale(0.8)" }} justify="end" gap={5}>
-                                                {
-                                                    item.filterFields.map((field, index) => {
-                                                        return (
-                                                            <Tag.CheckableTag
-                                                                key={index}
-                                                                style={{ margin: 0, fontSize: 12 }}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    handleLinkClick(item, field)
-                                                                }}>{field}</Tag.CheckableTag>
-                                                        )
-                                                    })
-                                                }
-                                            </Flex>
-                                        }
-
-                                    </Flex>
-                                </Card>
-                            </Col>
-                        )
-                    })
-                }
-            </Row>
+            {view === "grid" ? (
+                <Row gutter={[12, 12]}>
+                    {links.map((item, index) => (
+                        <Col key={index} span={8}>
+                            {renderCardContent(item)}
+                        </Col>
+                    ))}
+                </Row>
+            ) : (
+                <Flex vertical gap={8} >
+                    {links.map((item, index) => (
+                        <div key={index}>
+                            {/* „Řádkový“ vzhled: plná šířka */}
+                            <div style={{ width: "100%" }}>
+                                {renderCardContent(item)}
+                            </div>
+                        </div>
+                    ))}
+                </Flex>
+            )}
         </Flex>
     )
 }

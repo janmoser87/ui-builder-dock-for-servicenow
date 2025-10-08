@@ -26,7 +26,7 @@ export default function ClientState() {
     }
 
     return (
-        <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
+        <Flex vertical gap={5}>
             {
                 clientStates.map((clientState, index) => {
 

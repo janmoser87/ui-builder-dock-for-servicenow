@@ -12,7 +12,7 @@ import { getTabData } from "~scripts/Utils";
 // Context
 import { useAppContext } from "~contexts/AppContext";
 
-export default function App({ onAppReady = (tabData) => { }, showQuickLinks }) {
+export default function App({ onAppReady = (tabData) => { }, showQuickLinks, url }) {
 
 	const { tabData, setTabData } = useAppContext()
 
@@ -25,7 +25,7 @@ export default function App({ onAppReady = (tabData) => { }, showQuickLinks }) {
 	}
 	useEffect(() => {
 		init()
-	}, [])
+	}, [url])
 
 	if (!tabData) {
 		return
@@ -42,11 +42,8 @@ export default function App({ onAppReady = (tabData) => { }, showQuickLinks }) {
 	if (!tabData.isInUIBuilder || !tabData.isInUIBuilderSupportedPage) {
 		return (
 			<Flex justify="center" items="center" gap={10} vertical >
-
 				{
-					<Flex>
-						<QuickLinks />
-					</Flex>
+					<QuickLinks />
 				}
 				{
 					!tabData.isInUIBuilder &&
@@ -66,16 +63,8 @@ export default function App({ onAppReady = (tabData) => { }, showQuickLinks }) {
 	}
 
 	if (showQuickLinks) {
-		return (
-			<Flex>
-				<QuickLinks />
-			</Flex>
-		)
+		return <QuickLinks />
 	}
 
-	return (
-		<Flex>
-			<Tabs />
-		</Flex>
-	)
+	return <Tabs />
 }

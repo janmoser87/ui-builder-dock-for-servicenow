@@ -15,7 +15,7 @@ import Search from "components/Search"
 // App Context
 import { AppContextProvider } from "contexts/AppContext"
 
-function IndexPopup() {
+function IndexPopup({ url, isInSidepanel = false }) {
 
 	const [tabData, setTabData] = useState(null)
 
@@ -40,17 +40,17 @@ function IndexPopup() {
 					}
 				}}
 			>
-				<ErrorBoundary 
+				<ErrorBoundary
 					FallbackComponent={({ error }) => {
 						return (
-							<Flex vertical gap={10} style={{ padding: 20}}>
-								<Alert 
+							<Flex vertical gap={10} style={{ padding: 20 }}>
+								<Alert
 									type="error"
 									showIcon
 									message="Something went wrong"
 									description={error.message}
 								/>
-								<Typography.Text style={{fontSize: "10px"}}>{errorStack}</Typography.Text>
+								<Typography.Text style={{ fontSize: "10px" }}>{errorStack}</Typography.Text>
 							</Flex>
 						)
 					}}
@@ -58,12 +58,24 @@ function IndexPopup() {
 						setErrorStack(info.componentStack)
 					}}
 				>
-					<Flex vertical style={{ padding: 10 }}>
+					<Flex vertical style={{ padding: 10, width: isInSidepanel ? null : "700px" }}>
+						{!isInSidepanel &&
+							<Tag color="green">
+								<Flex justify="space-between" align="center">
+									Open this extension in sidepanel for persistent experience 😎
+									<Button type="link" onClick={() => {
+										chrome.sidePanel.open({ tabId: tabData.tabID })
+									}}>
+										Open
+									</Button>
+								</Flex>
+							</Tag>
+						}
 						<Flex justify="space-between" align="center" style={{ paddingRight: 10 }}>
 							<Flex gap={10} align="center" justify="flex-start" style={{ marginBottom: 5 }}>
 								<Image src={logo} width={32} preview={false} />
 								<Flex vertical>
-									<Badge count={`v${process.env.PLASMO_PUBLIC_VERSION}`} offset={[30,20]} color="gold">
+									<Badge count={`v${process.env.PLASMO_PUBLIC_VERSION}`} offset={[30, 20]} color="gold">
 										<Title level={4} style={{ margin: 0 }}>
 											UI Builder Dock
 										</Title>
@@ -93,50 +105,45 @@ function IndexPopup() {
 									return (
 										<Flex gap={10} vertical align="flex-end">
 											<Flex gap={5}>
+												{tabData?.isInServiceNow && (
+													<Button
+														type="primary"
+														size="small"
+														icon={<SearchOutlined style={{ color: "#ffffff" }} />}
+														onClick={() => setShowSearch(true)}
+														title="Search"
+
+													/>
+
+												)}
+												{tabData?.isInUIBuilderSupportedPage && (
+													<Button
+														type="primary"
+														size="small"
+														icon={<ThunderboltOutlined style={{ color: "#ffffff" }} />}
+														onClick={() => setShowQuickLinks(true)}
+														title="Quick links"
+													/>
+
+												)}
 												<Button
 													type="text"
 													size="small"
 													icon={<ReadOutlined style={{ color: "#1677ff" }} />}
 													onClick={() => setShowBlog(true)}
 													title="Latest articles"
-												>
-													Latest articles
-												</Button>
+												/>
+
 												<Button
 													type="text"
 													size="small"
 													icon={<QuestionCircleOutlined style={{ color: "#13c2c2" }} />}
 													onClick={() => setShowAbout(true)}
 													title="About"
-												>
-													About
-												</Button>
-											</Flex>
-											<Flex gap={5}>
-												{tabData?.isInServiceNow && (
-													<Button
-														type="dashed"
-														size="small"
-														icon={<SearchOutlined style={{ color: "#52c41a" }} />}
-														onClick={() => setShowSearch(true)}
-														title="Search"
+												/>
 
-													>
-														Search
-													</Button>
-												)}
-												{tabData?.isInUIBuilderSupportedPage && (
-													<Button
-														type="dashed"
-														size="small"
-														icon={<ThunderboltOutlined style={{ color: "#f59f00" }} />}
-														onClick={() => setShowQuickLinks(true)}
-														title="Quick links"
-													>
-														Quick links
-													</Button>
-												)}
 											</Flex>
+
 										</Flex>
 									)
 								})()}
@@ -161,6 +168,7 @@ function IndexPopup() {
 
 								return (
 									<App
+										url={url}
 										showQuickLinks={showQuickLinks}
 										onAppReady={(tabData) => {
 											setTabData(tabData)

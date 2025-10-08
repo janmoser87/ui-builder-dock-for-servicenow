@@ -21,7 +21,7 @@ export default function DataResources() {
     catch (e) { }
 
     return (
-        <Flex vertical gap={5} style={{ height: "400px", overflowY: "auto" }}>
+        <Flex vertical gap={5}>
             <DataResourceBuilder tabData={tabData} onCreatingModeChange={(creatingMode) => {
                 setShowList(!creatingMode)
             }} />
