@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import "./sidepanel.css"
 
-import IndexPopup from "./popup"
+// Components
+import Wrapper from "~components/Wrapper"
 
-function SidePanel() {
+export default function SidePanel() {
     const [currentUrl, setCurrentUrl] = useState("Loading...");
 
     useEffect(() => {
@@ -27,8 +29,14 @@ function SidePanel() {
     }, []);
 
     return (
-        <IndexPopup url={currentUrl} isInSidepanel={true} />
-    );
-}
+        <div
+            style={{
+                position: "absolute",
+                inset: 0,
+                boxSizing: "border-box"
+            }}>
+            <Wrapper url={currentUrl} isInSidepanel={true} />
+        </div>
+    )
 
-export default SidePanel;
+}

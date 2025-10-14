@@ -137,7 +137,7 @@ export default function QuickLinks() {
                                     shape="circle"
                                     color="purple"
                                     variant="filled"
-                                    style={{ position: "absolute", right: -15, top: -15, transform: "scale(0.6)" }}
+                                    style={{ position: "absolute", right: 0, top: 5, transform: "scale(0.7)" }}
                                     onClick={(e) => {
                                         e.stopPropagation()
                                         handleNewButtonClick(item)
@@ -173,7 +173,7 @@ export default function QuickLinks() {
     }
 
     return (
-        <Flex style={{ paddingTop: 10 }} vertical gap={15} flex={1}>
+        <Flex vertical gap={10} flex={1}>
             <Flex gap={8} align="center">
                 <Input
                     placeholder="Filter to apply after the click on the card 👇"
@@ -204,7 +204,6 @@ export default function QuickLinks() {
                 <Flex vertical gap={8} >
                     {links.map((item, index) => (
                         <div key={index}>
-                            {/* „Řádkový“ vzhled: plná šířka */}
                             <div style={{ width: "100%" }}>
                                 {renderCardContent(item)}
                             </div>

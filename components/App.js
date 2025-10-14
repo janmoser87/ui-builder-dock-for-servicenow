@@ -33,7 +33,7 @@ export default function App({ onAppReady = (tabData) => { }, showQuickLinks, url
 
 	if (!tabData.isInServiceNow) {
 		return (
-			<Flex justify="center" items="center" gap={10}>
+			<Flex flex={1} justify="center">
 				<Text style={{fontSize: 12}}>You are not in ServiceNow.</Text>
 			</Flex>
 		)
@@ -41,9 +41,11 @@ export default function App({ onAppReady = (tabData) => { }, showQuickLinks, url
 
 	if (!tabData.isInUIBuilder || !tabData.isInUIBuilderSupportedPage) {
 		return (
-			<Flex justify="center" items="center" gap={10} vertical >
+			<Flex flex={1} vertical>
 				{
-					<QuickLinks />
+					<Flex flex={1} style={{marginTop: '10px'}}>
+						<QuickLinks />
+					</Flex>
 				}
 				{
 					!tabData.isInUIBuilder &&

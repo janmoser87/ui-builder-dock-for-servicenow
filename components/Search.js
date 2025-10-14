@@ -676,7 +676,7 @@ export default function Search() {
     }
 
     return (
-        <Flex vertical gap={5}>
+        <Flex vertical gap={5} flex={1}>
             <Flex vertical gap={10}>
                 <Flex gap={5}>
                     {

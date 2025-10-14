@@ -1,12 +1,8 @@
-html,
-body {
-	margin: 0;
-	padding: 0;
-	background-color: #f7f2f2;
-	min-height: 400px;
-	overflow-x: hidden;
-}
-
-.vtop .ant-table-cell {
-  vertical-align: top !important;
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 700px;
+  height: 550px;
+  box-sizing: border-box;
+  position: relative; 
 }
