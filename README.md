@@ -3,6 +3,8 @@
 
 # 🔍 UI Builder Dock – Audit-only Release
 
+🛠️ [Available on Chrome Web Store](https://chromewebstore.google.com/detail/ui-builder-dock-for-servi/feekcnlbhmghaaoidhoiobpljgckeoap)
+
 This browser extension was built to enhance the developer experience within ServiceNow UI Builder by exposing internal configuration details that are normally hidden.
 
 This project is **not licensed for reuse, redistribution, or modification**.  
