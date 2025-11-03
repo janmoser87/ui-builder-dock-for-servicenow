@@ -6,7 +6,10 @@ import { PlusOutlined, DeleteOutlined, SearchOutlined, FileTextOutlined, ArrowLe
 
 const { Text, Title } = Typography
 const storage = new Storage({ area: "local" })
-const STORAGE_KEY = "notes"
+
+// Storage keys
+import { STORAGE_KEYS } from "~consts"
+const NOTES_STORAGE_KEY = STORAGE_KEYS.NOTES
 
 const now = () => Date.now()
 const uid = () => `${now()}_${Math.random().toString(36).slice(2, 8)}`
@@ -32,7 +35,7 @@ export default function Notes() {
         () =>
             debounce(async (payload) => {
                 try {
-                    await storage.set(STORAGE_KEY, payload)
+                    await storage.set(NOTES_STORAGE_KEY, payload)
                 } catch (err) {
                     console.error("[Notes] persist failed", err.message)
                     message.error(`[Notes] persist failed: ${err.message}`);
@@ -44,7 +47,7 @@ export default function Notes() {
     useEffect(() => {
         ; (async () => {
             try {
-                const data = (await storage.get(STORAGE_KEY)) || []
+                const data = (await storage.get(NOTES_STORAGE_KEY)) || []
                 setNotes(Array.isArray(data) ? data : [])
                 setActiveId(null) // start in list
             } catch (e) {
@@ -135,7 +138,7 @@ export default function Notes() {
     const handleExport = async () => {
         try {
             // Parsing
-            const data = (await storage.get(STORAGE_KEY)) || []
+            const data = (await storage.get(NOTES_STORAGE_KEY)) || []
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
 
             // Exporting
@@ -183,7 +186,7 @@ export default function Notes() {
                         // Importing
                         setNotes(notesImported)
                         setActiveId(notesImported[0]?.id ?? null)
-                        await storage.set(STORAGE_KEY, notesImported)
+                        await storage.set(NOTES_STORAGE_KEY, notesImported)
                         inst.destroy()
 
                         message.success('Import successful.');

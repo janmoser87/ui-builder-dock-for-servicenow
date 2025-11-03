@@ -2,10 +2,14 @@ import { useState } from "react"
 import { useStorage } from "@plasmohq/storage/hook"
 import { Flex, ConfigProvider, Typography, Button, Image, Alert, Space, Tag, Badge } from "antd";
 const { Title, Text } = Typography
-import { QuestionCircleOutlined, CloseOutlined, ThunderboltOutlined, ReadOutlined, SearchOutlined, FormOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, CloseOutlined, ThunderboltOutlined, ReadOutlined, SearchOutlined, FormOutlined, SettingOutlined } from '@ant-design/icons';
 import logo from "url:../assets/icon.development.png"
 import "./Wrapper.css"
 import { ErrorBoundary } from "react-error-boundary";
+
+// Storage keys
+import { STORAGE_KEYS } from "~consts"
+const ACTIVE_ROUTE_STORAGE_KEY = STORAGE_KEYS.ACTIVE_ROUTE
 
 // Components
 import About from "~components/About";
@@ -13,12 +17,16 @@ import Blog from "~components/Blog";
 import App from "~components/App"
 import Search from "~components/Search"
 import Notes from "~components/Notes"
+import Settings from "~components/Settings"
 
 // App Context
 import { AppContextProvider } from "~contexts/AppContext"
 
 // Routes mapping
 const routes = {
+    settings: {
+        title: "Settings"
+    },
     notes: {
         title: "Notepad"
     },
@@ -38,7 +46,7 @@ const routes = {
 
 function Wrapper({ url, isInSidepanel = false }) {
 
-    const [activeRoute, setActiveRoute, { isLoading }] = useStorage("active_route", null)
+    const [activeRoute, setActiveRoute, { isLoading }] = useStorage(ACTIVE_ROUTE_STORAGE_KEY, null)
     const [tabData, setTabData] = useState(null)
     const [errorStack, setErrorStack] = useState("")
 
@@ -126,10 +134,15 @@ function Wrapper({ url, isInSidepanel = false }) {
                                             <Button 
                                                 type="text" 
                                                 size="small" 
+                                                icon={<SettingOutlined 
+                                                style={{ color: "#1677ff" }} />} 
+                                                onClick={() => setActiveRoute("settings")} title="Settings" />
+                                            <Button 
+                                                type="text" 
+                                                size="small" 
                                                 icon={<ReadOutlined style={{ color: "#1677ff" }} />} 
                                                 onClick={() => setActiveRoute("blog")} 
                                                 title="Latest articles" />
-
                                             <Button 
                                                 type="text" 
                                                 size="small" 
@@ -146,6 +159,7 @@ function Wrapper({ url, isInSidepanel = false }) {
 
                         <Flex style={{ overflowX: "hidden", overflowY: "auto", paddingInline: "5px", marginTop: activeRoute ? "10px" : 0 }} flex={1}>
                             {(() => {
+                                if (activeRoute === "settings") return <Settings />
                                 if (activeRoute === "about") return <About />
                                 if (activeRoute === "blog") return <Blog />
                                 if (activeRoute === "search") return <Search />

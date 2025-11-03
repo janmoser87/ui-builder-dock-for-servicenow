@@ -30,7 +30,7 @@ export default function Event({ data }) {
                 <Flex align="center" gap={5}>
                     <Text code style={{fontSize: "12px"}}>{data.payload.value.propName}</Text>
                     <Text> = </Text>
-                    <Text code style={{fontSize: "12px"}}>{data.payload.value.value}</Text>
+                    <Text code style={{fontSize: "12px"}}>{JSON.stringify(data.payload.value.value)}</Text>
                 </Flex>
             )
         }

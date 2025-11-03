@@ -5,7 +5,10 @@ const { Text, Link } = Typography;
 
 import { Storage } from "@plasmohq/storage"
 const storage = new Storage({ area: "local" })
-const storage_prefix = "lastSearchResults_"
+
+// Storage keys
+import { STORAGE_KEYS } from "~consts"
+const LAST_SEARCH_RESULTS_STORAGE_KEY = STORAGE_KEYS.LAST_SEARCH_RESULTS
 
 // Utils
 import { fetchTableData, getGck } from "scripts/Utils";
@@ -624,13 +627,13 @@ export default function Search() {
     const [stats, setStats] = useState([])
 
     const getLastSearchResults = async () => {
-        let lastSearchResults = await storage.get(`${storage_prefix}${selectedSearchSource}`) || { stats: [], results: [] } 
+        let lastSearchResults = await storage.get(`${LAST_SEARCH_RESULTS_STORAGE_KEY}${selectedSearchSource}`) || { stats: [], results: [] } 
         setStats(lastSearchResults.stats)
         setSearchResults(lastSearchResults.results)
     }
 
     const setLastSearchResults = async (lastSearchResults) => {
-        await storage.set(`${storage_prefix}${selectedSearchSource}`, lastSearchResults)
+        await storage.set(`${LAST_SEARCH_RESULTS_STORAGE_KEY}${selectedSearchSource}`, lastSearchResults)
     }
 
     useEffect(() => {

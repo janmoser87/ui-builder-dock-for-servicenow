@@ -7,6 +7,10 @@ import { useStorage } from "@plasmohq/storage/hook"
 // Context
 import { useAppContext } from "~contexts/AppContext";
 
+// Storage keys
+import { STORAGE_KEYS } from "~consts"
+const QUICKLINKS_VIEW_STORAGE_KEY = STORAGE_KEYS.QUICKLINKS_VIEW
+
 const links = [
     { name: "UI Builder", targetType: "direct", target: "/now/builder/ui/home", icon: "AppstoreOutlined", color: "#2980b9", group: "UI Builder", acceptsFilter: false },
     { name: "Experiences", targetType: "table", target: "sys_ux_page_registry", icon: "CompassOutlined", color: "#f59e0b", group: "UI Builder", acceptsFilter: true, filterFields: ["title", "path"] },
@@ -34,7 +38,7 @@ export default function QuickLinks() {
 
     const { tabData } = useAppContext()
     const [filter, setFilter] = useState("")
-    const [view, setView, {isLoading}] = useStorage("quicklinks_view", "grid") // "grid" | "list"
+    const [view, setView, {isLoading}] = useStorage(QUICKLINKS_VIEW_STORAGE_KEY, "grid") // "grid" | "list"
 
     const GridIcon = Icons.AppstoreOutlined
     const ListIcon = Icons.UnorderedListOutlined
