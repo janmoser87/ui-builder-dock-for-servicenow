@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tabs, Spin, Flex, Alert, Button } from "antd";
-import { ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined, ApartmentOutlined } from '@ant-design/icons';
 
 // Components
 import DataResources from "./Tabs/DataResources/DataResources";
@@ -8,6 +8,7 @@ import ClientState from "./Tabs/ClientState/ClientState";
 import ClientScripts from "./Tabs/ClientScripts/ClientScripts";
 import PageProperties from "./Tabs/PageProperties/PageProperties";
 import Events from "./Tabs/Events/Events";
+import ComponentsTree from "./Tabs/ComponentsTree/ComponentsTree";
 
 // Utils
 import { fetchTableData, getGck } from "~scripts/Utils";
@@ -181,6 +182,11 @@ export default function Tabs() {
             key: '5',
             label: 'Events',
             children: <Events />,
+        },
+        {
+            key: '6',
+            label: <ApartmentOutlined style={{ fontSize: '16px' }} />,
+            children: <ComponentsTree />,
         },
     ]
 

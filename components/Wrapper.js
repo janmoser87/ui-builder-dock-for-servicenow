@@ -155,7 +155,7 @@ function Wrapper({ url, isInSidepanel = false }) {
                                     </Flex>
                                 )}
                             </Flex>
-                        </Flex>
+                        </Flex>                        
 
                         <Flex style={{ overflowX: "hidden", overflowY: "auto", paddingInline: "5px", marginTop: activeRoute ? "10px" : 0 }} flex={1}>
                             {(() => {

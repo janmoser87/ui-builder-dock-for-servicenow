@@ -14,6 +14,7 @@ export const AppContextProvider = ({ children }) => {
     const [macroponentData, setMacroponentData] = useState(null)
     const [tabData, setTabData] = useState(null)
     const [loadedArticles, setLoadedArticles] = useState(null)
+    const [loadedTree, setLoadedTree] = useState([])
 
     const contextValue = {
         macroponentData,
@@ -21,7 +22,9 @@ export const AppContextProvider = ({ children }) => {
         tabData,
         setTabData,
         loadedArticles,
-        setLoadedArticles
+        setLoadedArticles,
+        loadedTree,
+        setLoadedTree
     };
 
     return (

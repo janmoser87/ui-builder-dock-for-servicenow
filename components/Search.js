@@ -133,7 +133,7 @@ const searchSources = {
                 }
             ];
 
-            return searchResults.map((exp, idx) => {
+            return searchResults.toSorted((a, b) => a.title.localeCompare(b.title)).map((exp, idx) => {
                 return (
                     <Card key={idx} size="small" styles={{ body: { padding: 0 } }}>
                         <Collapse
@@ -329,7 +329,7 @@ const searchSources = {
                 }
             ];
 
-            return searchResults.map((pageCollection, idx) => {
+            return searchResults.toSorted((a, b) => a.name.localeCompare(b.name)).map((pageCollection, idx) => {
                 const routes = pageCollection._routes || [];
                 return (
                     <Card key={idx} size="small" styles={{ body: { padding: 0 } }}>
@@ -563,7 +563,7 @@ const searchSources = {
                 },
             ];
 
-            return searchResults.map((component, idx) => {
+            return searchResults.toSorted((a, b) => a.label.localeCompare(b.label)).map((component, idx) => {
 
                 // Missing Metadata = it's not "Component builder" component
                 const compatibleWithComponentBuilder = !!component._metadata
