@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useStorage } from "@plasmohq/storage/hook"
-import { Flex, ConfigProvider, Typography, Button, Image, Alert, Space, Tag, Badge } from "antd";
+import { Flex, ConfigProvider, Typography, Button, Image, Alert, Space, Tag, Badge, Dropdown, Space } from "antd";
 const { Title, Text } = Typography
-import { QuestionCircleOutlined, CloseOutlined, ThunderboltOutlined, ReadOutlined, SearchOutlined, FormOutlined, SettingOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import logo from "url:../assets/icon.development.png"
 import "./Wrapper.css"
 import { ErrorBoundary } from "react-error-boundary";
@@ -18,30 +18,57 @@ import App from "~components/App"
 import Search from "~components/Search"
 import Notes from "~components/Notes"
 import Settings from "~components/Settings"
+import WorkspaceInspector from "~components/WorkspaceInspector/WorkspaceInspector";
+import CompositionInspector from "~components/CompositionInspector/CompositionInspector";
 
 // App Context
 import { AppContextProvider } from "~contexts/AppContext"
 
-// Routes mapping
-const routes = {
-    settings: {
-        title: "Settings"
-    },
-    notes: {
-        title: "Notepad"
-    },
-    search: {
-        title: "Search"
-    },
-    quicklinks: {
-        title: "Quicklinks"
-    },
-    blog: {
-        title: "Latest articles"
-    },
-    about: {
-        title: "About me"
-    }
+const Menu = ({ tabData, onRouteClick }) => {
+
+    const menuItems = [
+        {
+            key: 'workspaceInspector',
+            label: '🕵️‍♂️ Workspace Inspector',
+            extra: 'Beta'
+        },
+        tabData?.isInUIBuilderSupportedPage ? {
+            key: 'compositionInspector',
+            label: '🕵️‍♂️ Composition Inspector',
+        } : null,
+        tabData?.isInServiceNow ? {
+            key: 'search',
+            label: '🔎 Search',
+        } : null,
+        tabData?.isInServiceNow ? {
+            key: 'quicklinks',
+            label: '⚡ Quicklinks',
+        } : null,
+        {
+            key: 'notes',
+            label: '📝 Notepad',
+        },
+        {
+            key: 'settings',
+            label: '⚙️ Settings',
+        },
+        {
+            key: 'blog',
+            label: '📖 Latest articles',
+        },
+        {
+            key: 'about',
+            label: '🙍 About',
+        },
+    ]
+
+    return (
+        <Dropdown menu={{items: menuItems, onClick: ({ key }) => { onRouteClick(key) }}}>
+            <Button type="text" onClick={(e) => e.preventDefault()}>
+                🛠️ Tools
+            </Button>
+        </Dropdown>
+    )
 }
 
 function Wrapper({ url, isInSidepanel = false }) {
@@ -94,69 +121,27 @@ function Wrapper({ url, isInSidepanel = false }) {
                                     <Text>{tabData?.tabUrlBase}</Text>
                                 </Flex>
                             </Flex>
+
                             <Flex>
                                 {activeRoute ? (
                                     <Flex align="center" justify="center" gap={10}>
-                                        <Title level={5} style={{margin: 0}}>
-                                            {routes[activeRoute]?.title}
-                                        </Title>
                                         <Button size="small" shape="circle" icon={<CloseOutlined />} onClick={() => setActiveRoute(null)} title="Close" />
                                     </Flex>
                                 ) : (
                                     <Flex gap={10} vertical align="flex-end">
+
                                         <Flex gap={5}>
-                                            
-                                            <Button 
-                                                type="primary" 
-                                                size="small" 
-                                                icon={<FormOutlined 
-                                                style={{ color: "#fff" }} />} 
-                                                onClick={() => setActiveRoute("notes")} title="Notepad" />
 
-                                            {tabData?.isInServiceNow && 
-                                                <Button 
-                                                type="primary" 
-                                                size="small" 
-                                                icon={<SearchOutlined style={{ color: "#fff" }} />} 
-                                                onClick={() => setActiveRoute("search")} title="Search" />
-                                            }
-
-                                            {tabData?.isInUIBuilderSupportedPage && 
-                                                <Button 
-                                                    type="primary" 
-                                                    size="small" 
-                                                    icon={<ThunderboltOutlined 
-                                                    style={{ color: "#fff" }} />} 
-                                                    onClick={() => setActiveRoute("quicklinks")} 
-                                                    title="Quick links" />
-                                            }
-
-                                            <Button 
-                                                type="text" 
-                                                size="small" 
-                                                icon={<SettingOutlined 
-                                                style={{ color: "#1677ff" }} />} 
-                                                onClick={() => setActiveRoute("settings")} title="Settings" />
-                                            <Button 
-                                                type="text" 
-                                                size="small" 
-                                                icon={<ReadOutlined style={{ color: "#1677ff" }} />} 
-                                                onClick={() => setActiveRoute("blog")} 
-                                                title="Latest articles" />
-                                            <Button 
-                                                type="text" 
-                                                size="small" 
-                                                icon={<QuestionCircleOutlined 
-                                                style={{ color: "#13c2c2" }} />} 
-                                                onClick={() => setActiveRoute("about")} 
-                                                title="About" />
+                                            <Menu
+                                                tabData={tabData}
+                                                onRouteClick={setActiveRoute}
+                                            />
 
                                         </Flex>
                                     </Flex>
                                 )}
                             </Flex>
-                        </Flex>                        
-
+                        </Flex>
                         <Flex style={{ overflowX: "hidden", overflowY: "auto", paddingInline: "5px", marginTop: activeRoute ? "10px" : 0 }} flex={1}>
                             {(() => {
                                 if (activeRoute === "settings") return <Settings />
@@ -164,6 +149,9 @@ function Wrapper({ url, isInSidepanel = false }) {
                                 if (activeRoute === "blog") return <Blog />
                                 if (activeRoute === "search") return <Search />
                                 if (activeRoute === "notes") return <Notes />
+                                if (activeRoute === "workspaceInspector") return <WorkspaceInspector />
+                                if (activeRoute === "compositionInspector") return <CompositionInspector />
+
                                 return (
                                     <App
                                         url={url}

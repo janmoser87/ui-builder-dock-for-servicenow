@@ -131,7 +131,7 @@ const TreeNode = ({ node, onNodeClick = () => { } }) => {
     )
 }
 
-export default function ComponentsTree() {
+export default function compositionInspector() {
 
     const { tabData, macroponentData, loadedTree, setLoadedTree } = useAppContext()
     const [loading, setLoading] = useState(false)
@@ -157,7 +157,7 @@ export default function ComponentsTree() {
     const tree = loadedTree;
 
     return (
-        <Flex vertical gap={5}>
+        <Flex vertical gap={5} style={{width: '100%'}}>
             <Button type="primary" onClick={_generateTree} disabled={loading} loading={loading && { icon: <SyncOutlined spin /> }} >
                 {!loading && 'Generate tree' || 'Loading macroponents'}
             </Button>

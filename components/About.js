@@ -4,114 +4,134 @@ import {
 	Typography,
 	Avatar,
 	Flex,
-	Divider,
+	List,
+	Button,
 	theme
 } from "antd"
 import {
 	LinkedinOutlined,
 	GlobalOutlined,
 	CoffeeOutlined,
-	GithubOutlined
+	GithubOutlined,
+	RightOutlined
 } from "@ant-design/icons"
 
 import avatar from "url:../assets/avatar.png"
 
-const { Text, Link, Title } = Typography
+const { Text, Title, Link } = Typography
 
 export default function About() {
 	const { token } = theme.useToken()
 
+	const links = [
+		{
+			title: "My UI Builder Corner",
+			description: "Personal blog with tips and thoughts",
+			icon: <GlobalOutlined style={{ fontSize: 20, color: token.colorPrimary }} />,
+			href: "https://myuibcorner.com"
+		},
+		{
+			title: "LinkedIn",
+			description: "Sharing day-to-day ServiceNow experience",
+			icon: <LinkedinOutlined style={{ fontSize: 20, color: "#0077b5" }} />,
+			href: "https://www.linkedin.com/in/jan-moser-78b2339a/"
+		},
+		{
+			title: "Buy Me a Coffee",
+			description: "Like the extension? Support with a coffee",
+			icon: <CoffeeOutlined style={{ fontSize: 20, color: "#d35400" }} />,
+			href: "https://buymeacoffee.com/janmoser"
+		}
+	]
+
 	return (
-		<Flex vertical gap={12}>
-			{/* Header */}
-			<Card>
-				<Flex align="center" gap={12}>
-					<Avatar src={avatar} size={48} />
-					<Flex vertical>
-						<Title level={5} style={{ margin: 0 }}>
+		<>
+			<style>
+				{`
+					.hover-list-item {
+						transition: background-color 0.3s;
+						border-radius: ${token.borderRadiusLG}px; /* Aby to ladilo se zaoblením */
+					}
+					.hover-list-item:hover {
+						background-color: ${token.colorFillAlter}; /* Jemná barva pozadí z AntD */
+					}
+				`}
+			</style>
+			<Flex vertical gap={16} style={{ padding: 16, width: '100%' }}>
+				
+				{/* Main Profile Card */}
+				<Card
+					styles={{ body: { padding: 0 } }}
+					bordered={false}
+					style={{ boxShadow: token.boxShadowSecondary }}
+				>
+					{/* Header Section */}
+					<Flex
+						vertical
+						align="center"
+						style={{ padding: "24px 24px 16px 24px", background: token.colorFillQuaternary }}
+					>
+						<Avatar
+							src={avatar}
+							size={64}
+							style={{ border: `2px solid ${token.colorBgContainer}` }}
+						/>
+						<Title level={4} style={{ margin: "12px 0 4px" }}>
 							Jan Moser
 						</Title>
-						<Text type="secondary" style={{ fontSize: 12 }}>
-							Made with ❤️ 
-						</Text>
-					</Flex>
-				</Flex>
-			</Card>
-
-			{/* Links */}
-			<Card>
-				<Flex vertical gap={12}>
-					<Flex vertical gap={4}>
-						<Flex gap={6} align="center">
-							<GlobalOutlined style={{ color: token.colorPrimary }} />
-							<Link href="https://myuibcorner.com" target="_blank">
-								My UI Builder Corner
-							</Link>
-						</Flex>
-						<Text type="secondary" style={{ fontSize: 12 }}>
-							Personal blog with tips and thoughts on UI Builder
-						</Text>
+						<Text type="secondary">ServiceNow UI Builder Enthusiast</Text>
 					</Flex>
 
-					<Divider style={{ margin: "0px 0" }} />
-
-					<Flex vertical gap={4}>
-						<Flex gap={6} align="center">
-							<LinkedinOutlined style={{ color: "#0077b5" }} />
-							<Link
-								href="https://www.linkedin.com/in/jan-moser-78b2339a/"
-								target="_blank"
+					{/* Links List */}
+					<List
+						itemLayout="horizontal"
+						dataSource={links}
+						renderItem={(item) => (
+							<List.Item
+								style={{
+									padding: "12px 24px",
+									cursor: "pointer",
+									transition: "background 0.3s"
+								}}
+								className="hover-list-item"
+								onClick={() => window.open(item.href, "_blank")}
+								actions={[<RightOutlined key="arrow" style={{ color: token.colorTextQuaternary, fontSize: 12 }} />]}
 							>
-								LinkedIn
-							</Link>
-						</Flex>
-						<Text type="secondary" style={{ fontSize: 12 }}>
-							Sharing day-to-day ServiceNow experience
+								<List.Item.Meta
+									avatar={item.icon}
+									title={<Text strong>{item.title}</Text>}
+									description={
+										<Text type="secondary" style={{ fontSize: 12 }}>
+											{item.description}
+										</Text>
+									}
+								/>
+							</List.Item>
+						)}
+					/>
+				</Card>
+
+				{/* Secondary Actions & Footer */}
+				<Flex vertical align="center" gap={12}>
+					<Button
+						type="text"
+						icon={<GithubOutlined />}
+						href="https://github.com/janmoser87/ui-builder-dock-for-servicenow"
+						target="_blank"
+					>
+						View Source on GitHub
+					</Button>
+
+					<Flex vertical align="center" gap={4}>
+						<Text type="secondary" style={{ fontSize: 11, textAlign: "center" }}>
+							Source-available for transparency. Verify code & checksums.
 						</Text>
-					</Flex>
-
-					<Divider style={{ margin: "0px 0" }} />
-
-					<Flex vertical gap={4}>
-						<Flex gap={6} align="center">
-							<CoffeeOutlined style={{ color: "#d35400" }} />
-							<Link href="https://buymeacoffee.com/janmoser" target="_blank">
-								Buy Me a Coffee
-							</Link>
-						</Flex>
-						<Text type="secondary" style={{ fontSize: 12 }}>
-							Like the extension? Support with a coffee
+						<Text disabled style={{ fontSize: 10, textAlign: "center", maxWidth: 280 }}>
+							This extension is provided “as is” without warranties. Redistribution not allowed.
 						</Text>
 					</Flex>
 				</Flex>
-			</Card>
-
-			{/* GitHub */}
-			<Card>
-				<Flex vertical gap={6}>
-					<Flex gap={6} align="center">
-						<GithubOutlined />
-						<Link
-							href="https://github.com/janmoser87/ui-builder-dock-for-servicenow"
-							target="_blank"
-						>
-							View Source on GitHub
-						</Link>
-					</Flex>
-					<Text type="secondary" style={{ fontSize: 12 }}>
-						Source-available for transparency.
-						Verify the code, build it yourself, and compare checksums.
-					</Text>
-				</Flex>
-			</Card>
-
-			{/* Disclaimer */}
-			<Card>
-				<Text type="secondary" style={{ fontSize: 11 }}>
-					This extension is provided “as is” without any warranties.
-					Redistribution or copying is not allowed.
-				</Text>
-			</Card>
-		</Flex>
+			</Flex>
+			</>
 	)
 }

@@ -27,6 +27,7 @@ export default function App({ onAppReady = (tabData) => { }, showQuickLinks, url
 		init()
 	}, [url])
 
+	
 	if (!tabData) {
 		return
 	}

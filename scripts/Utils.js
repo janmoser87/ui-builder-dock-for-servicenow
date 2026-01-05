@@ -80,6 +80,46 @@ export const getIsInUIBuilderSupportedPage = (url) => {
     }
 }
 
+export const getWorkspaceData = (url) => {
+    try {
+        // Pattern 1: /x/{scope_app_prefix}/{workspace_url}/record/{sys_id}
+        const customMatch = url.match(/\/x\/[^/]+\/([^/]+)\/record\/([^/]+)\/([^/?&]+)/)
+        if (customMatch) {
+            return {
+                isInWorkspace: true,
+                workspaceData: {
+                    workspaceUrl: customMatch[1],
+                    table: customMatch[2],
+                    sysId: customMatch[3]
+                }
+            }
+        }
+
+        // Pattern 2: /now/{workspace_url}/record/{sys_id}
+        const nativeMatch = url.match(/\/now\/([^/]+)\/record\/([^/]+)\/([^/?&]+)/)
+        if (nativeMatch) {
+            return {
+                isInWorkspace: true,
+                workspaceData: {
+                    workspaceUrl: nativeMatch[1],
+                    table: nativeMatch[2],
+                    sysId: nativeMatch[3]
+                }
+            }
+        }
+
+        return {
+            isInWorkspace: false,
+            workspaceData: null
+        }
+    } catch (e) {
+        return {
+            isInWorkspace: false,
+            workspaceData: null
+        }
+    }
+}
+
 export const getTabData = () => {
 
     return new Promise((resolve) => {
@@ -102,10 +142,11 @@ export const getTabData = () => {
                 tabID: tabs[0].id,
                 tabUrlFull: url,
                 tabUrlBase: url.split("/")[2],
-                tabUrlProps: extractUrlProps(url),                
+                tabUrlProps: extractUrlProps(url),
                 isInServiceNow: getIsInServiceNow(url),
                 isInUIBuilder: getIsInUIBuilder(url),
-                isInUIBuilderSupportedPage: getIsInUIBuilderSupportedPage(url)
+                isInUIBuilderSupportedPage: getIsInUIBuilderSupportedPage(url),
+                ...getWorkspaceData(url),
             })
 
         })

@@ -1,13 +1,27 @@
-import { useEffect, useState } from "react"
-import { Typography, List, Card, Skeleton, Alert, Button, Flex } from "antd"
-import { ReadOutlined } from "@ant-design/icons"
-const { Title, Text, Link } = Typography
+import React, { useEffect, useState } from "react"
+import {
+    Typography,
+    List,
+    Avatar,
+    Alert,
+    Button,
+    Flex,
+    theme
+} from "antd"
+import {
+    ReadOutlined,
+    RightOutlined,
+    GlobalOutlined
+} from "@ant-design/icons"
 
 // Context
-import { useAppContext } from "~contexts/AppContext";
+import { useAppContext } from "~contexts/AppContext"
 
-const BLOG_URL = "https://public-api.wordpress.com/rest/v1.1/sites/myuibcorner.com/posts/?number=10&fields=ID,URL,date,title,excerpt,featured_image"
+const { Text, Title, Paragraph } = Typography
 
+const BLOG_URL = "https://public-api.wordpress.com/rest/v1.1/sites/myuibcorner.com/posts/?number=15&fields=ID,URL,date,title,excerpt,featured_image"
+
+// Helpers
 function decodeEntities(s = "") {
     const el = document.createElement("textarea")
     el.innerHTML = s
@@ -22,10 +36,10 @@ function stripHtml(html = "") {
 
 function fmtDate(iso) {
     try {
-        return new Intl.DateTimeFormat("cs-CZ", {
-            year: "numeric",
+        return new Intl.DateTimeFormat("en-US", {
             month: "short",
-            day: "2-digit"
+            day: "numeric",
+            year: "numeric"
         }).format(new Date(iso))
     } catch {
         return iso
@@ -33,7 +47,7 @@ function fmtDate(iso) {
 }
 
 export default function Blog() {
-
+    const { token } = theme.useToken()
     const { loadedArticles, setLoadedArticles } = useAppContext()
 
     const [loading, setLoading] = useState(false)
@@ -57,7 +71,8 @@ export default function Blog() {
                 url: post.URL,
                 title: decodeEntities(post.title),
                 date: post.date,
-                excerpt: stripHtml(decodeEntities(post.excerpt))
+                excerpt: stripHtml(decodeEntities(post.excerpt)),
+                image: post.featured_image
             })))
 
         } catch (e) {
@@ -73,115 +88,108 @@ export default function Blog() {
         }
     }, [])
 
-    return (
-        <Flex flex={1} vertical>
+    const hoverStyle = `
+        .blog-list-item {
+            transition: all 0.3s;
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 12px !important; /* Override default list padding */
+        }
+        .blog-list-item:hover {
+            background-color: ${token.colorFillQuaternary};
+        }
+        .blog-list-item:hover .ant-typography-secondary {
+            color: ${token.colorText};
+        }
+    `
 
-            {loading && <Flex>
-                <Skeleton active paragraph={{ rows: 4 }} />
-            </Flex>}
-
-            {error && <Flex vertical>
-                <Alert type="error" message="Unable to load blog articles" description={"error"} />
-            </Flex>}
-
-            {!loading && !error &&
-                <Flex vertical gap={10}>
-                    <Flex vertical gap={5}>
-                        {
-                            (loadedArticles || []).map(article => {
-                                return (
-                                    <Card
-                                        key={article.ID}
-                                        size="small"
-                                        hoverable
-                                        onClick={() => window.open(article.url, "_blank", "noopener,noreferrer")}
-                                        role="button"
-                                        style={{ width: "100%" }}
-                                    >
-                                        <Flex vertical gap={10}>
-                                            <Flex vertical>
-                                                <Title level={5} style={{ margin: 0, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "wrap" }}>
-                                                    {article.title}
-                                                </Title>
-                                                <Text type="secondary" style={{ whiteSpace: "nowrap", fontSize: "12px" }}>{fmtDate(article.date)}</Text>
-                                            </Flex>
-                                            {article.excerpt && <Text type="secondary" style={{
-                                                display: "-webkit-box",
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: "vertical",
-                                                overflow: "hidden",
-                                                fontSize: "11px"
-                                            }}>
-                                                {article.excerpt}
-                                            </Text>}
-                                        </Flex>
-                                    </Card>
-                                )
-                            })
-                        }
-                    </Flex>
-                    <Flex align="center" vertical>
-                        <Text color="grey">
-                            There is more.
-                        </Text>
-                        <Link href="https://myuibcorner.com" target="_blank">
-                            Open the blog 😎
-                        </Link>
-                    </Flex>
-                </Flex>}
-        </Flex>
-    )
+    if (error) {
+        return (
+            <Flex align="center" justify="center" style={{ padding: 20, height: "100%" }}>
+                <Alert
+                    type="error"
+                    message="Oops"
+                    description="Unable to load blog articles."
+                    action={<Button size="small" onClick={load}>Retry</Button>}
+                />
+            </Flex>
+        )
+    }
 
     return (
-        <Flex vertical gap={5}>
-            {!loading && !error && <Flex>
-                <Button onClick={() => window.open("https://myuibcorner.com", "_blank", "noopener,noreferrer")} style={{ transform: "scale(0.85)", transformOrigin: "left center" }}>
-                    Open My
-                    UI Builder
-                    Corner ☕
-                </Button>
-            </Flex>}
+        <Flex vertical style={{ height: "100%", width: '100%', overflow: "hidden" }}>
+            <style>{hoverStyle}</style>
 
-            {loading && <Skeleton active paragraph={{ rows: 4 }} />}
+            {/* Scrollable List Area */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "0 8px" }}>
+                <List
+                    itemLayout="horizontal"
+                    loading={loading}
+                    dataSource={loadedArticles || []}
+                    split={false}
+                    renderItem={(item) => (
+                        <List.Item
+                            className="blog-list-item"
+                            onClick={() => window.open(item.url, "_blank", "noopener,noreferrer")}
+                        >
+                            <List.Item.Meta
+                                avatar={
+                                    <Avatar
+                                        shape="square"
+                                        size={64}
+                                        src={item.image}
+                                        icon={<ReadOutlined />} // Fallback icon
+                                        style={{
+                                            backgroundColor: item.image ? 'transparent' : token.colorFillSecondary,
+                                            borderRadius: 6
+                                        }}
+                                    />
+                                }
+                                title={
+                                    <Flex justify="space-between" align="start">
+                                        <Text strong style={{ fontSize: 14, lineHeight: 1.2, marginRight: 8 }}>
+                                            {item.title}
+                                        </Text>
 
-            {error && <Alert type="error" message="Unable to load blog articles" description={error} />}
-
-            {!loading && !error &&
-                <Flex vertical gap={5}>
-                    {
-                        (loadedArticles || []).map(article => {
-                            return (
-                                <Card
-                                    key={article.ID}
-                                    size="small"
-                                    hoverable
-                                    onClick={() => window.open(article.url, "_blank", "noopener,noreferrer")}
-                                    role="button"
-                                    style={{ width: "100%" }}
-                                >
-                                    <Flex vertical gap={10}>
-                                        <Flex vertical>
-                                            <Title level={5} style={{ margin: 0, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                                {article.title}
-                                            </Title>
-                                            <Text type="secondary" style={{ whiteSpace: "nowrap", fontSize: "12px" }}>{fmtDate(article.date)}</Text>
-                                        </Flex>
-                                        {article.excerpt && <Text type="secondary" style={{
-                                            display: "-webkit-box",
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: "vertical",
-                                            overflow: "hidden",
-                                            fontSize: "11px"
-                                        }}>
-                                            {article.excerpt}
-                                        </Text>}
+                                        <Text type="secondary" style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+                                            {fmtDate(item.date)}
+                                        </Text>
                                     </Flex>
-                                </Card>
-                            )
-                        })
-                    }
-                </Flex>
-            }
+                                }
+                                description={
+                                    <Paragraph
+                                        type="secondary"
+                                        ellipsis={{ rows: 2, expandable: false }}
+                                        style={{ margin: 0, fontSize: 12 }}
+                                    >
+                                        {item.excerpt}
+                                    </Paragraph>
+                                }
+                            />
+                        </List.Item>
+                    )}
+                />
+            </div>
+
+            {/* Footer Action */}
+            <Flex
+                style={{
+                    padding: "12px 16px",
+                    borderTop: `1px solid ${token.colorBorderSecondary}`,
+                    background: token.colorBgContainer
+                }}
+                justify="center"
+            >
+                <Button
+                    type="primary"
+                    ghost
+                    icon={<GlobalOutlined />}
+                    onClick={() => window.open("https://myuibcorner.com", "_blank", "noopener,noreferrer")}
+                    block
+                >
+                    Visit blog for more...
+                </Button>
+            </Flex>
         </Flex>
     )
 }
