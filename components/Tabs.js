@@ -26,7 +26,11 @@ export default function Tabs() {
 
         try {
             setLoading(true)
+            
             let macroponent, macroponentID;
+
+            // Macroponen config for experience and page colelctions
+            let macroponentConfig = {};
 
             // Getting type of current UIB page
             const { tabUrlProps: { type: pageType } } = tabData
@@ -34,30 +38,29 @@ export default function Tabs() {
             // Getting g_ck to make API calls
             const g_ck = await getGck()
 
-            // Table and ID where to get the macroponent ID from
-            let parentTable, parentSysID
-
             if (pageType == "experience" || pageType == "pc") {
+                
                 // Experience and Page Colelction have macroponentID on sys_ux_screen record
-                parentTable = "sys_ux_screen"
-                parentSysID = tabData.tabUrlProps.ids[2]
+                let [parentErr, parentData] = await fetchTableData(tabData.tabUrlBase, "sys_ux_screen", g_ck, "sys_id=" + tabData.tabUrlProps.ids[2])
+                
+                if (parentErr) {
+                    setError(parentErr)
+                    return
+                }
+
+                if (!parentData || !parentData[0] || !parentData[0].macroponent) {
+                    setError("Unable to get macroponent data.")
+                    return
+                }
+
+                macroponentID = parentData[0].macroponent.value
+                macroponentConfig = parentData[0].macroponent_config
             }
 
+            // For components, macroponentID is directly in URL
             if (pageType == "component") {
-                // Component has it on sys_cb_metadata record
-                parentTable = "sys_cb_metadata"
-                parentSysID = tabData.tabUrlProps.ids[0]
-            }
-
-            /**
-             * Macroponent parent record
-             */
-            let [parentErr, parentData] = await fetchTableData(tabData.tabUrlBase, parentTable, g_ck, "sys_id=" + parentSysID)
-            if (parentErr) {
-                setError(parentErr)
-                return
-            }
-            macroponentID = parentData[0].macroponent.value
+                macroponentID = tabData.tabUrlProps.ids[0]
+            }  
 
             if (!macroponentID) {
                 setError("Unable to get macroponent data.")
@@ -131,7 +134,7 @@ export default function Tabs() {
              * Values of properties of Experience and Page Collections are on parent (sys_ux_screen.macroponent_config)
              */
             if (pageType == "experience" || pageType == "pc") {
-                macroponent._parent_screen_macroponent_config = parentData[0].macroponent_config
+                macroponent._parent_screen_macroponent_config = macroponentConfig
             }
 
             setMacroponentData(macroponent)

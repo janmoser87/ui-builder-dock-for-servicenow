@@ -446,12 +446,12 @@ const searchSources = {
             stats.push("Macroponents: " + macropoData.length)
 
             // Metadata
-            const [metadataError, metadataData] = await fetchTableData(tabUrlBase, "sys_cb_metadata", g_ck, `sysparm_query=macroponentIN${macroponentIDs}`)
-            if (metadataError) {
-                throw new Error(metadataError)
-            }
+            //const [metadataError, metadataData] = await fetchTableData(tabUrlBase, "sys_cb_metadata", g_ck, `sysparm_query=macroponentIN${macroponentIDs}`)
+            //if (metadataError) {
+                //throw new Error(metadataError)
+            //}
 
-            stats.push("Metadata: " + metadataData.length)
+            //stats.push("Metadata: " + metadataData.length)
 
             // Scopes 
             const scopeIDs = [...new Set(toolboxData.map(component => component.sys_scope?.value).filter(Boolean))]
@@ -477,7 +477,7 @@ const searchSources = {
             results = toolboxData.map((toolboxRecord) => {
                 const macroponent = macropoData.find(macroponent => toolboxRecord.macroponent.value === macroponent.sys_id)
                 const scope = scopesData.find(scope => scope.sys_id === toolboxRecord.sys_scope?.value)
-                const metadata = metadataData.find(metadata => metadata.macroponent?.value && macroponent?.sys_id && metadata.macroponent.value === macroponent.sys_id)
+                //const metadata = metadataData.find(metadata => metadata.macroponent?.value && macroponent?.sys_id && metadata.macroponent.value === macroponent.sys_id)
 
                 let properties = []
                 try {
@@ -491,7 +491,7 @@ const searchSources = {
                 return {
                     ...toolboxRecord,
                     _macroponent: macroponent,
-                    _metadata: metadata,
+                    //_metadata: metadata,
                     _scope: scope,
                     _properties: properties,
                     _dispatchedEvents: dispatchedEvents
@@ -565,8 +565,8 @@ const searchSources = {
 
             return searchResults.toSorted((a, b) => a.label.localeCompare(b.label)).map((component, idx) => {
 
-                // Missing Metadata = it's not "Component builder" component
-                const compatibleWithComponentBuilder = !!component._metadata
+                // Missing root_component = it's probably created via UI BUilder Component Builder
+                const compatibleWithComponentBuilder = !(!!component._macroponent?.root_component);
 
                 return (
                     <Card key={idx} size="small" styles={{ body: { padding: 0 } }}>
@@ -580,7 +580,7 @@ const searchSources = {
                                             <Flex justify="space-between" align="flex-start">
                                                 <Link disabled={!compatibleWithComponentBuilder} onClick={() => { 
                                                     if (!compatibleWithComponentBuilder) return; 
-                                                    chrome.tabs.create({ url: `https://${tabUrlBase}/now/builder/ui/component/${component._metadata.sys_id}`, active: false }) }} 
+                                                    chrome.tabs.create({ url: `https://${tabUrlBase}/now/builder/ui/component/${component._macroponent.sys_id}`, active: false }) }} 
                                                 strong>
                                                     {component.label}
                                                 </Link>

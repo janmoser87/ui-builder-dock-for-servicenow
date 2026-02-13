@@ -5,7 +5,7 @@ const fetchAndEnrich = async (baseUrl, table, g_ck, query, fields) => {
     const [err, data] = await fetchTableData(baseUrl, table, g_ck, queryParams);
     
     // Handle error
-    if (err) throw new Error(`Error fetching ${table}: ${baseUrl} ${err} ${g_ck} ${queryParams}`);
+    if (err) throw new Error(`Error fetching ${table}: ${baseUrl} ${err} ${queryParams}`);
     
     // Enrich data with table name
     return data.map(item => ({ ...item, table }));
