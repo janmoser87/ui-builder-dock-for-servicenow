@@ -130,13 +130,13 @@ const loadActionsAssignments = async (baseUrl, g_ck, actionConfigId) => {
 
     // Split into sections
     actionsAssignmentsM2M.forEach(assignment => {
-        if (assignment.child.model.value === 'd91731a9534723003eddddeeff7b121c') {
+        if (assignment.child?.model?.value === 'd91731a9534723003eddddeeff7b121c') {
             // Related List
             relatedListsSection.data.push(assignment);
-        } else if (assignment.child.model.value === 'c3547169534723003eddddeeff7b126c') {
+        } else if (assignment.child?.model?.value === 'c3547169534723003eddddeeff7b126c') {
             // List
             listsSection.data.push(assignment);
-        } else if (assignment.child.model.value === '15920e6d534723003eddddeeff7b1244') {
+        } else if (assignment.child?.model?.value === '15920e6d534723003eddddeeff7b1244') {
             // Field Decorator
             fieldDecoratorsSection.data.push(assignment);
         }
