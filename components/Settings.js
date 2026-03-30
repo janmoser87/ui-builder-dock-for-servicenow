@@ -1,11 +1,12 @@
 // Settings.js
 import { Flex, Typography, Divider, Card, Switch, Space, Alert } from "antd"
-import { AppstoreOutlined, DatabaseOutlined } from "@ant-design/icons"
+import { AppstoreOutlined, DatabaseOutlined, DesktopOutlined } from "@ant-design/icons"
 const { Title, Text } = Typography
 import { useStorage } from "@plasmohq/storage/hook"
 
 import backendButtons from "../dom/definitions/backendButtons"
 import frontendButtons from "../dom/definitions/frontendButtons"
+import workspaceFeatures from "../dom/definitions/workspaceFeatures"
 
 // Storage keys
 import { STORAGE_KEYS } from "~consts"
@@ -26,6 +27,12 @@ export default function Settings() {
             color: "#fa8c16", // Ant Design orange
             icon: <DatabaseOutlined style={{ color: "#fa8c16" }} />,
             items: backendButtons
+        },
+        {
+            title: "Workspace",
+            color: "#52c41a", // Ant Design green
+            icon: <DesktopOutlined style={{ color: "#52c41a" }} />,
+            items: workspaceFeatures
         }
     ]
 
