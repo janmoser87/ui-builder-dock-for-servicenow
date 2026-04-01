@@ -57,14 +57,6 @@ function findAllActionBarWrappers() {
     return wrappers
 }
 
-function debounce(fn, ms) {
-    let t
-    return (...args) => {
-        clearTimeout(t)
-        t = setTimeout(() => fn(...args), ms)
-    }
-}
-
 /**
  * BUTTONS
  */
@@ -180,21 +172,10 @@ async function openBackendRecord(sysId, gck) {
  * ACTION BAR INJECTION LOGIC
  */
 
-let _observer = null
-
-/**
- * Disconnect → clean old buttons → inject fresh → reconnect on next frame.
- * Disconnecting before our own DOM changes prevents an observer feedback loop
- * where our insertions/removals re-trigger injection.
- */
 function injectAll() {
-    if (_observer) { _observer.disconnect(); _observer = null }
-
     findAllActionBarWrappers().forEach(wrapper => {
-        
         // Remove stale link buttons left behind after SN re-renders the action bar.
         wrapper.querySelectorAll(`[${LINK_ATTR}]`).forEach(el => el.remove())
-
 
         wrapper.querySelectorAll("now-button[component-name], now-split-button[component-name]")
             .forEach(nowBtn => {
@@ -203,20 +184,6 @@ function injectAll() {
                 nowBtn.insertAdjacentElement("afterend", createLinkButton(sysId))
             })
     })
-
-    requestAnimationFrame(startObserver)
-}
-
-function startObserver() {
-    if (_observer) _observer.disconnect()
-
-    /**
-     * Observe document.body with subtree — picks up shadow host additions/removals.
-     * that happen when the user switches tabs inside the workspace.
-     */
-    _observer = new MutationObserver(debounce(injectAll, 300))
-    _observer.observe(document.body, { childList: true, subtree: true })
-    startPopoverObserver()
 }
 
 /**
@@ -283,26 +250,21 @@ function startPopoverObserver() {
 
 
 /**
- * Main entry point for workspace-specific button injections. Invoked from buttons.js after loading user prefs.
+ * Injects backend link buttons into all currently visible action bar wrappers
+ * and starts the popover observer (for split-button dropdowns).
+ * Called on demand from workspaceDock.js when the user clicks "Backend Actions".
  */
-export const loadWorkspaceButtons = (prefs) => {
-    if (prefs?.["workspace-backend-links"] === false) return
+export const injectBackendLinks = () => {
+    injectAll()
+    startPopoverObserver()
+}
 
-    /**
-     * Poll until we find the action bar (max 20 × 500 ms = 10 s).
-     * If it never appears (non-workspace page) we simply give up.
-     */
-    const MAX_ATTEMPTS = 20
-    let attempts = 0
-    const interval = setInterval(() => {
-
-        // In most cases, there only be one action bar wrapper but no one never knows... Technically in UIB, it's posible to add another one
-        const wrappers = findAllActionBarWrappers()
-        if (wrappers.length === 0) {
-            if (++attempts >= MAX_ATTEMPTS) clearInterval(interval)
-            return
-        }
-        clearInterval(interval)
-        injectAll()
-    }, 500)
+/**
+ * Removes all injected backend link buttons from the page.
+ */
+export const removeBackendLinks = () => {
+    document.querySelectorAll(`[${LINK_ATTR}]`).forEach(el => el.remove())
+    findAllActionBarWrappers().forEach(wrapper => {
+        wrapper.querySelectorAll(`[${LINK_ATTR}]`).forEach(el => el.remove())
+    })
 }

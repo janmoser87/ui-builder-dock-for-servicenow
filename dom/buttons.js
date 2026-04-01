@@ -6,7 +6,9 @@ import { createButton } from './utils'
 // Definitions
 import backendButtons from './definitions/backendButtons'
 import frontendButtons from './definitions/frontendButtons'
-import { loadWorkspaceButtons } from './workspaceButtons'
+
+// Workspace dock
+import { loadWorkspaceDock } from './workspaceDock/index'
 
 // Storage keys
 import { STORAGE_KEYS } from "~consts"
@@ -20,7 +22,7 @@ export const loadButtons = async () => {
     const prefs = (await storage.get(SETTINGS_KEY)) || {}
     loadBackendButtons(prefs)
     loadFrontendButtons(prefs)
-    loadWorkspaceButtons(prefs)
+    loadWorkspaceDock(prefs)
 }
 
 /**
